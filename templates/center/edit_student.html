@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit Student</title>
+  <style>
+    /* (Use same styles as your admission form) */
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 30px;
+    }
+    fieldset {
+      max-width: 950px;
+      margin: auto;
+      background: white;
+      border: 2px solid #007bff;
+      border-radius: 10px;
+      padding: 25px 30px;
+    }
+    legend {
+      font-size: 24px;
+      font-weight: bold;
+      color: #007bff;
+    }
+    table {
+      width: 100%;
+      border-spacing: 10px 8px;
+    }
+    td {
+      vertical-align: top;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 6px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    .submit-btn {
+      background: #007bff;
+      color: #fff;
+      font-size: 16px;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .submit-btn:hover {
+      background: #0056b3;
+    }
+    .photo-preview {
+      width: 180px;
+      height: 200px;
+      border: 3px solid #007bff;
+      border-radius: 5px;
+      background: #f0f4ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .photo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+    .upload-btn {
+      padding: 6px 12px;
+      font-size: 14px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      display: inline-block;
+    }
+    .upload-btn:hover {
+      background-color: #0056b3;
+    }
+    input[type="file"] {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <form action="/update_student/{{ student.id }}" method="POST" enctype="multipart/form-data">
+    <fieldset>
+      <legend>Edit Student Details</legend>
+      <table>
+        <tr>
+          <td>
+            <label>Student Name</label>
+            <input type="text" name="name" value="{{ student.name }}" required>
+          </td>
+          <td rowspan="3" align="center">
+            <label>Photo</label>
+            <div class="photo-preview" id="preview-box">
+              {% if student.photo %}
+                <img src="{{ url_for('static', filename=student.photo) }}" alt="Student Photo">
+              {% else %}
+                <span>Preview</span>
+              {% endif %}
+            </div>
+            <label for="photo" class="upload-btn">Change Photo</label>
+            <input type="file" name="photo" id="photo" accept="image/*" onchange="previewPhoto(event)">
+          </td>
+
+
+        </tr>
+        <tr>
+          <td>
+            <label>Father's Name</label>
+            <input type="text" name="father_name" value="{{ student.father_name }}" >
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label>Date of Birth</label>
+            <input type="date" name="dob" value="{{ student.dob }}" >
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label>Mobile Number</label>
+            <input type="text" name="mobile" value="{{ student.mobile }}" required>
+          </td>
+          <td>
+            <label>Alternate Mobile</label>
+            <input type="text" name="alt_mobile" value="{{ student.alt_mobile }}">
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label>Email ID</label>
+            <input type="email" name="email" value="{{ student.email }}">
+          </td>
+          <td>
+            <label>Gender</label>
+            <select name="gender" >
+              <option value="">--Select--</option>
+              <option {% if student.gender == 'Male' %}selected{% endif %}>Male</option>
+              <option {% if student.gender == 'Female' %}selected{% endif %}>Female</option>
+              <option {% if student.gender == 'Other' %}selected{% endif %}>Other</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <label>Full Address</label>
+            <textarea name="address" rows="3" >{{ student.address }}</textarea>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label>City</label>
+            <input type="text" name="city" value="{{ student.city }}" >
+          </td>
+          <td>
+            <label>Pin Code</label>
+            <input type="text" name="pin_code" value="{{ student.pin_code }}" >
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label>State</label>
+            <input type="text" name="state" value="{{ student.state }}" >
+          </td>
+          <td>
+            <label>Qualification</label>
+            <select name="qualification" >
+              <option value="">--Select--</option>
+              <option {% if student.qualification == '10th' %}selected{% endif %}>10th</option>
+              <option {% if student.qualification == '12th' %}selected{% endif %}>12th</option>
+              <option {% if student.qualification == 'Graduate' %}selected{% endif %}>Graduate</option>
+              <option {% if student.qualification == 'Post Graduate' %}selected{% endif %}>Post Graduate</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label>Passing Year</label>
+            <input type="text" name="passing_year" value="{{ student.passing_year }}">
+          </td>
+          <td>
+            <label>School/College Name</label>
+            <input type="text" name="school" value="{{ student.school }}">
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label>Board/University</label>
+            <input type="text" name="board" value="{{ student.board }}">
+          </td>
+          <td>
+            <label>Admission Date</label>
+            <input type="date" name="admission_date" value="{{ student.admission_date }}" required>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <label for="status"><strong>Status:</strong></label>
+            <select name="status" id="status" required>
+              <option value="Active" {% if student.status == 'Active' %}selected{% endif %}>Active</option>
+              <option value="Inactive" {% if student.status == 'Inactive' %}selected{% endif %}>Inactive</option>
+              <option value="Completed" {% if student.status == 'Completed' %}selected{% endif %}>Completed</option>
+              <option value="Dropped" {% if student.status == 'Dropped' %}selected{% endif %}>Dropped</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" style="text-align: center;">
+            <button type="submit" class="submit-btn">Update Student</button>
+          </td>
+        </tr>
+      </table>
+    </fieldset>
+  </form>
+
+  <script>
+  function previewPhoto(event) {
+    const previewBox = document.getElementById('preview-box');
+    const file = event.target.files[0];
+
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        previewBox.innerHTML = '<img src="' + e.target.result + '" alt="Preview">';
+      }
+      reader.readAsDataURL(file);
+    } else {
+      previewBox.innerHTML = '<span>Preview</span>';
+    }
+  }
+</script>
+
+</body>
+</html>

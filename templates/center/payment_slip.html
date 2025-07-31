@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Payment Slip</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      padding: 30px;
+    }
+
+    .slip-container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 30px 40px;
+      border: 2px solid #444;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 26px;
+      color: #2c3e50;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .slip-title {
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      background-color: #3498db;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 25px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px dashed #ccc;
+    }
+
+    .row strong {
+      width: 40%;
+      color: #2c3e50;
+    }
+
+    .print-btn {
+      display: block;
+      margin: 25px auto 0;
+      padding: 10px 20px;
+      background: #2ecc71;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .print-btn:hover {
+      background: #27ae60;
+    }
+
+    @media print {
+      .print-btn {
+        display: none;
+      }
+
+      body {
+        background: white;
+        padding: 0;
+      }
+
+      .slip-container {
+        border: none;
+        box-shadow: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .slip-title {
+        background: #000;
+        color: white;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="slip-container">
+    <div class="header">
+      <h1>{{ center.center_name }}</h1>
+      <p>{{ center.address }}</p>
+    </div>
+
+    <div class="slip-title">🧾 Payment Receipt</div>
+
+    <div class="row"><strong>Center Name:</strong> {{ center.center_name }}</div>
+    <div class="row"><strong>Center Code:</strong> {{ center.center_code }}</div>
+    <div class="row"><strong>Student Name:</strong> {{ payment.name }}</div>
+    <div class="row"><strong>Student ID:</strong> {{ payment.student_id }}</div>
+    <div class="row"><strong>Batch:</strong> {{ payment.batch_name }} ({{ payment.batch_id }})</div>
+    <div class="row"><strong>Payment Date:</strong> {{ payment.payment_date }}</div>
+    <div class="row"><strong>Actual Payment Date:</strong> {{ payment.actual_payment_date }}</div>
+    <div class="row"><strong>Installment:</strong> {{ payment.installment_name }}</div>
+    <div class="row"><strong>Payment Mode:</strong> {{ payment.payment_mode }}</div>
+    <div class="row"><strong>Status:</strong> {{ payment.payment_status }}</div>
+    <div class="row"><strong>Amount Paid:</strong> ₹{{ "%.2f"|format(payment.payment_amount) }}</div>
+    <div class="row"><strong>Balance:</strong> ₹{{ "%.2f"|format(payment.balance_amount) }}</div>
+    <div class="row"><strong>Remarks:</strong> {{ payment.remarks }}</div>
+
+    <button class="print-btn" onclick="window.print()">🖨️ Print Slip</button>
+  </div>
+
+</body>
+</html>

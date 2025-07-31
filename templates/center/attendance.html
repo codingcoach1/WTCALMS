@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Attendance</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 20px;
+      background-color: #f4f6f8;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    select, input[type="date"] {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-right: 15px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #2c7be5;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #1a68d1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #2c7be5;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    tr:hover {
+      background-color: #eaf0fa;
+    }
+
+    #mark_all {
+      transform: scale(1.2);
+    }
+
+    .note {
+      color: red;
+      text-align: center;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    
+
+  </style>
+</head>
+<body>
+
+  <script>
+  setTimeout(() => {
+    const flashMsg = document.querySelector('div[style*="background-color"]');
+    if (flashMsg) flashMsg.style.display = 'none';
+  }, 3000); // Hide after 3 seconds
+</script>
+
+
+
+<h2>📋 Attendance Management</h2>
+
+<!-- Filter Form -->
+<form method="get" action="/center/attendance">
+  <label for="batch">Select Batch:</label>
+  <select name="batch_id" required>
+    <option value="">-- Select Batch --</option>
+    {% for batch in batches %}
+      <option value="{{ batch.id }}" {% if selected_batch_id == batch.id|string %}selected{% endif %}>
+        {{ batch.batch_code }} - {{ batch.batch_time }}
+      </option>
+    {% endfor %}
+  </select>
+
+  <label>Select Date:</label>
+  <input type="date" name="date" value="{{ selected_date or today }}" max="{{ today }}">
+  <button type="submit">🔍 Load</button>
+</form>
+
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div style="padding: 10px 20px; margin: 10px auto; width: 80%; max-width: 600px;
+                border-radius: 8px; background-color: #d4edda; color: #155724; 
+                border: 1px solid #c3e6cb; font-weight: bold; text-align: center;">
+      {% for category, message in messages %}
+        {{ message }}
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+
+<!-- Attendance Table -->
+{% if attendance_data %}
+<form method="POST" action="/center/save_attendance">
+  <input type="hidden" name="batch_id" value="{{ selected_batch_id }}">
+  <input type="hidden" name="date" value="{{ selected_date }}">
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Student ID</th>
+        <th>Name</th>
+        <th>
+          <input type="checkbox" id="mark_all" onclick="toggleAll(this)">
+          Mark All Present
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for student in attendance_data %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ student.student_code }}</td>
+        <td>{{ student.name }}</td>
+        <td>
+          <input type="checkbox" name="present[]" value="{{ student.student_id }}"
+            {% if student.status == 'Present' %}checked{% endif %}>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div style="text-align:center; margin-top: 20px;">
+    <button type="submit">💾 Save Attendance</button>
+  </div>
+</form>
+
+<script>
+  function toggleAll(source) {
+    let checkboxes = document.getElementsByName('present[]');
+    for (let i = 0; i < checkboxes.length; i++) {
+      checkboxes[i].checked = source.checked;
+    }
+  }
+</script>
+
+{% elif selected_batch_id %}
+  <p class="note">⚠️ No students found in this batch.</p>
+{% endif %}
+
+</body>
+</html>

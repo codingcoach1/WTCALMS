@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Student Payment</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #e0eafc, #cfdef3);
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: 50px auto;
+      background: #ffffff;
+      padding: 35px 45px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+      border-radius: 15px;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px 30px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #555;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 10px 12px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      background-color: #f9f9f9;
+      transition: 0.2s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: #4CAF50;
+      background-color: #fff;
+      outline: none;
+      box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
+    }
+
+    .form-group input[disabled] {
+      background-color: #e0e0e0;
+      cursor: not-allowed;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .submit-btn {
+      grid-column: 1 / -1;
+      background: linear-gradient(to right, #4CAF50, #45a049);
+      color: white;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      background: linear-gradient(to right, #388e3c, #2e7d32);
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 25px;
+      }
+
+      h2 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🧾 Edit Student Payment</h2>
+    <form method="POST">
+      <div class="form-group">
+        <label>Student ID</label>
+        <input type="text" value="{{ payment.student_id }}" disabled>
+      </div>
+
+      <div class="form-group">
+        <label>Batch ID</label>
+        <input type="text" value="{{ payment.batch_id }}" disabled>
+      </div>
+
+      <div class="form-group">
+        <label>Payment Date</label>
+        <input type="date" name="payment_date" value="{{ payment.payment_date }}" required>
+      </div>
+
+      <div class="form-group">
+        <label>Actual Payment Date</label>
+        <input type="date" name="actual_payment_date" value="{{ payment.actual_payment_date }}" required>
+      </div>
+
+      <div class="form-group">
+        <label>Payment Amount</label>
+        <input type="number" name="payment_amount" value="{{ payment.payment_amount }}" required>
+      </div>
+
+      <div class="form-group">
+        <label>Payment Mode</label>
+        <select name="payment_mode" required>
+          {% for mode in ['Cash', 'UPI', 'QR Scan', 'Bank Transfer'] %}
+            <option value="{{ mode }}" {% if payment.payment_mode == mode %}selected{% endif %}>{{ mode }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Payment Status</label>
+        <select name="payment_status" required>
+          {% for status in ['Success', 'Pending', 'Cancelled'] %}
+            <option value="{{ status }}" {% if payment.payment_status == status %}selected{% endif %}>{{ status }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Installment Name</label>
+        <input type="text" name="installment_name" value="{{ payment.installment_name }}">
+      </div>
+
+      <div class="form-group full-width">
+        <label>Remarks</label>
+        <textarea name="remarks" rows="3">{{ payment.remarks }}</textarea>
+      </div>
+
+      <input type="submit" class="submit-btn" value="💾 Update Payment">
+    </form>
+  </div>
+</body>
+</html>

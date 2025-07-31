@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Test Series</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f8;
+            padding: 40px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 16px 18px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f0f4f8;
+            color: #333;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f9fcff;
+        }
+
+        .btn {
+            padding: 8px 14px;
+            margin-right: 8px;
+            border: none;
+            border-radius: 6px;
+            background-color: #4a90e2;
+            color: white;
+            font-size: 14px;
+            text-decoration: none;
+            transition: background 0.3s;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background-color: #357abd;
+        }
+
+        @media (max-width: 768px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+
+            thead tr {
+                display: none;
+            }
+
+            tr {
+                margin-bottom: 15px;
+                border-radius: 8px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+                padding: 10px;
+                background: #fff;
+            }
+
+            td {
+                padding: 10px;
+                position: relative;
+            }
+
+            td::before {
+                content: attr(data-label);
+                font-weight: bold;
+                position: absolute;
+                left: 10px;
+                top: 10px;
+                width: 140px;
+                color: #555;
+            }
+
+            td:last-child {
+                padding-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h2>📋 All Test Series</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Total Questions</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for test in test_series %}
+            <tr>
+                <td data-label="Name">{{ test.name }}</td>
+                <td data-label="Type">{{ test.type }}</td>
+                <td data-label="Status">{{ test.status }}</td>
+                <td data-label="Total Questions">{{ question_counts[test.id] }}</td>
+                <td data-label="Actions">
+                    <a class="btn" href="/add_questions_to_series/{{ test.id }}">➕ Add</a>
+                    <a class="btn" href="/view_test_questions/{{ test.id }}">👁️ View</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

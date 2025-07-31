@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Questions in Test Series</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f8;
+            padding: 40px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        th, td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+            font-size: 15px;
+        }
+
+        th {
+            background-color: #f0f4f8;
+            color: #333;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f9fcff;
+        }
+
+        .btn {
+            padding: 8px 14px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background-color: #c0392b;
+        }
+
+        @media (max-width: 768px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+
+            thead tr {
+                display: none;
+            }
+
+            tr {
+                margin-bottom: 15px;
+                background-color: #fff;
+                padding: 12px;
+                border-radius: 8px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            }
+
+            td {
+                position: relative;
+                padding-left: 50%;
+                margin-bottom: 8px;
+            }
+
+            td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 16px;
+                top: 12px;
+                font-weight: bold;
+                color: #555;
+                width: 45%;
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h2>📘 Questions in Test Series #{{ series_id }}</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Question</th>
+                <th>Option 1</th>
+                <th>Option 2</th>
+                <th>Option 3</th>
+                <th>Option 4</th>
+                <th>Correct</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for q in questions %}
+            <tr>
+                <td data-label="Question">{{ q.question_text }}</td>
+                <td data-label="Option 1">{{ q.option_1 }}</td>
+                <td data-label="Option 2">{{ q.option_2 }}</td>
+                <td data-label="Option 3">{{ q.option_3 }}</td>
+                <td data-label="Option 4">{{ q.option_4 }}</td>
+                <td data-label="Correct">{{ q.correct_option }}</td>
+                <td data-label="Action">
+                    <a class="btn" href="/remove_question_from_series/{{ series_id }}/{{ q.id }}"
+                       onclick="return confirm('Remove this question?')">🗑 Remove</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

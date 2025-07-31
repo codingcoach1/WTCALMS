@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Test Series</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <style>
+        .question-card {
+            border: 1px solid #ccc;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+        }
+        .already-added {
+            background-color: #e0ffe0;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h3 class="mb-4 text-center">✏️ Edit Test Series</h3>
+
+    <form method="POST">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label>Test Name</label>
+                <input type="text" name="name" value="{{ test.name }}" class="form-control" required>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Test Type</label>
+                <select name="type" class="form-control" required>
+                    <option value="Mock Test" {% if test.type == 'Mock Test' %}selected{% endif %}>Mock Test</option>
+                    <option value="Unit Test" {% if test.type == 'Unit Test' %}selected{% endif %}>Unit Test</option>
+                    <option value="Monthly Test" {% if test.type == 'Monthly Test' %}selected{% endif %}>Monthly Test</option>
+                    <option value="Final Test" {% if test.type == 'Final Test' %}selected{% endif %}>Final Test</option>
+                </select>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Status</label>
+                <select name="status" class="form-control" required>
+                    <option value="Active" {% if test.status == 'Active' %}selected{% endif %}>Active</option>
+                    <option value="Pause" {% if test.status == 'Pause' %}selected{% endif %}>Pause</option>
+                    <option value="Inactive" {% if test.status == 'Inactive' %}selected{% endif %}>Inactive</option>
+                </select>
+            </div>
+        </div>
+
+        <hr>
+
+        <h5>📑 Add Questions</h5>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <form method="GET">
+                    <label>Filter by Module:</label>
+                    <select name="module_id" class="form-control" onchange="this.form.submit()">
+                        <option value="">-- All Modules --</option>
+                        {% for module in modules %}
+                            <option value="{{ module.id }}" {% if module.id == selected_module_id %}selected{% endif %}>{{ module.module_title }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+            <div class="col-md-6 text-right">
+                <p><strong>✅ Selected:</strong> <span id="selectedCount">0</span></p>
+            </div>
+        </div>
+
+        <div class="row">
+            {% for q in questions %}
+                <div class="col-md-6">
+                    <div class="question-card {% if q.id in existing_question_ids %}already-added{% endif %}">
+                        <label>
+                            <input
+                                type="checkbox"
+                                name="question_ids"
+                                value="{{ q.id }}"
+                                {% if q.id in existing_question_ids %}checked disabled{% endif %}
+                                onchange="updateCount()"
+                            >
+                            <strong>Q:</strong> {{ q.question_text }}
+                        </label>
+                        <ul>
+                            <li>A. {{ q.option_1 }}</li>
+                            <li>B. {{ q.option_2 }}</li>
+                            <li>C. {{ q.option_3 }}</li>
+                            <li>D. {{ q.option_4 }}</li>
+                        </ul>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-4">💾 Update Test Series</button>
+        <a href="/view_test_series" class="btn btn-secondary mt-4">Cancel</a>
+    </form>
+</div>
+
+<script>
+    function updateCount() {
+        let count = document.querySelectorAll('input[name="question_ids"]:checked:not(:disabled)').length;
+        document.getElementById('selectedCount').innerText = count;
+    }
+    updateCount();
+</script>
+</body>
+</html>

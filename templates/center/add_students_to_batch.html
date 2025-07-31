@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Students to Batch</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f8f9fa;
+      padding: 30px;
+      margin: 0;
+    }
+
+    h2 {
+      color: #2c3e50;
+    }
+
+    form {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      resize: vertical;
+      font-size: 14px;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      padding: 10px 20px;
+      font-size: 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .success, .error {
+      margin-bottom: 20px;
+      padding: 10px 15px;
+      border-radius: 5px;
+    }
+
+    .success {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #c8e6c9;
+    }
+
+    .error {
+      background-color: #ffebee;
+      color: #c62828;
+      border: 1px solid #ffcdd2;
+    }
+
+    table.student-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    table th, table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    table th {
+      background-color: #f1f1f1;
+    }
+
+    table tr:hover {
+      background-color: #f9f9f9;
+    }
+
+    a {
+      color: #e74c3c;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>➕ Add Students to Batch: {{ batch.batch_name }} ({{ batch.batch_id }})</h2>
+
+  <form method="POST">
+    <label><strong>Enter Student IDs (comma-separated):</strong></label><br>
+    <textarea name="student_ids" rows="3" placeholder="Registration Number (,) Comma Seperated [ 8412, 8413 ....]"></textarea><br>
+    <button type="submit">Add to Batch</button>
+  </form>
+
+  {% if added_students %}
+    <div class="success">
+      ✅ <strong>Added Successfully:</strong> {{ added_students | join(', ') }}
+    </div>
+  {% endif %}
+
+  {% if messages %}
+    <div class="error">
+      ⚠️ <strong>Warnings:</strong><br>
+      <ul>
+        {% for msg in messages %}
+          <li>{{ msg }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <h3>👨‍🎓 Students in This Batch:</h3>
+  <table class="student-table">
+    <thead>
+      <tr>
+        <th>Student ID</th>
+        <th>Name</th>
+        <th>Mobile</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for student in batch_students %}
+      <tr>
+        <td>{{ student.student_id }}</td>
+        <td>{{ student.name }}</td>
+        <td>{{ student.mobile }}</td>
+        <td>
+          <a href="/center/remove_from_batch/{{ student.student_id }}" onclick="return confirm('Remove this student?')">Remove</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+</body>
+</html>

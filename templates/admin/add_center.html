@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Center</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 40px;
+      background: #f0f2f5;
+    }
+
+    .container {
+      max-width: 650px;
+      margin: auto;
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #0072ff;
+      margin-bottom: 30px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .form-group {
+      position: relative;
+    }
+
+    .form-group i {
+      position: absolute;
+      top: 12px;
+      left: 10px;
+      color: #888;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 90%;
+      padding: 10px 10px 10px 35px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    button {
+      background: #0072ff;
+      color: #fff;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #005acc;
+    }
+
+    .flash {
+      color: green;
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2><i class="fas fa-plus-circle"></i> Add New Center</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <p class="flash">{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <i class="fas fa-barcode"></i>
+        <input type="number" name="center_code" placeholder="Center Code" required>
+      </div>
+
+      <div class="form-group">
+        <i class="fas fa-school"></i>
+        <input type="text" name="center_name" placeholder="Center Name" required>
+      </div>
+
+      <div class="form-group">
+        <i class="fas fa-user-tie"></i>
+        <input type="text" name="owner_name" placeholder="Owner Name" required>
+      </div>
+
+      <div class="form-group">
+        <i class="fas fa-envelope"></i>
+        <input type="email" name="email" placeholder="Email ID" required>
+      </div>
+
+      <div class="form-group">
+        <i class="fas fa-phone"></i>
+        <input type="text" name="mobile" placeholder="Mobile Number" required>
+      </div>
+
+      <div class="form-group">
+        <i class="fas fa-map-marker-alt"></i>
+        <textarea name="address" placeholder="Full Address" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <i class="fas fa-map-pin"></i>
+        <input type="text" name="pin_code" placeholder="Pin Code" required>
+      </div>
+
+      <div class="form-group">
+        <i class="fas fa-flag"></i>
+        <input type="text" name="state" placeholder="State" required>
+      </div>
+
+      <div class="form-group">
+        <i class="fas fa-signal"></i>
+        <select name="status" required>
+          <option value="">-- Select Status --</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+          <option value="Pause">Pause</option>
+          <option value="Dead">Dead</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <i class="fas fa-image"></i>
+        <input type="file" name="photo" accept="image/*" required>
+      </div>
+
+      <button type="submit"><i class="fas fa-save"></i> Add Center</button>
+    </form>
+  </div>
+</body>
+</html>

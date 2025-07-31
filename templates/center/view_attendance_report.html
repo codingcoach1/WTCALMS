@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Monthly Attendance Report</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f8;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    form {
+      background-color: #fff;
+      padding: 20px;
+      margin: auto;
+      max-width: 900px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    select, input[type="month"] {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #2c7be5;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background-color: #1a68d1;
+    }
+
+    table {
+      width: 100%;
+      max-width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+      background-color: #fff;
+      box-shadow: 0 0 8px rgba(0,0,0,0.05);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #2c7be5;
+      color: white;
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    tr:hover {
+      background-color: #eef4ff;
+    }
+
+    .status-present {
+      color: green;
+      font-weight: bold;
+    }
+
+    .status-absent {
+      color: red;
+      font-weight: bold;
+    }
+
+    .status-none {
+      color: gray;
+    }
+
+    .export-btn {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+  </style>
+</head>
+<body>
+
+<h2>📊 Monthly Attendance Report</h2>
+
+<form method="GET" action="/center/view_attendance_report">
+  <label>Select Batch:</label>
+  <select name="batch_id" required>
+    <option value="">-- Select --</option>
+    {% for batch in batches %}
+      <option value="{{ batch.id }}" {% if batch.id == selected_batch_id %}selected{% endif %}>
+        {{ batch.batch_code }} - {{ batch.batch_name }}
+      </option>
+    {% endfor %}
+  </select>
+
+  <label>Select Month:</label>
+  <input type="month" name="month" value="{{ selected_month }}" required>
+
+  <button type="submit">🔍 View</button>
+</form>
+
+{% if students %}
+  <table>
+    <thead>
+      <tr>
+        <th>Student ID</th>
+        <th>Name</th>
+        {% for day in days_in_month %}
+          <th>{{ day }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for student in students %}
+        <tr>
+          <td>{{ student.student_id }}</td>
+          <td>{{ student.name }}</td>
+          {% for day in days_in_month %}
+            {% set date_key = selected_year ~ '-' ~ "%02d"|format(selected_month_num|int) ~ '-' ~ "%02d"|format(day|int) %}
+            {% set status = attendance.get(student.id, {}).get(date_key, '') %}
+            <td>
+              {% if status == 'Present' %}
+                <span class="status-present">✔️</span>
+              {% elif status == 'Absent' %}
+                <span class="status-absent">❌</span>
+              {% else %}
+                <span class="status-none">-</span>
+              {% endif %}
+            </td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="export-btn">
+    <form action="/center/export_attendance_csv" method="POST">
+      <input type="hidden" name="batch_id" value="{{ selected_batch_id }}">
+      <input type="hidden" name="month" value="{{ selected_month }}">
+      <button type="submit">⬇️ Export as CSV</button>
+    </form>
+  </div>
+{% endif %}
+
+</body>
+</html>

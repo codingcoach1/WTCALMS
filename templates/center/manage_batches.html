@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Batches</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f7fa;
+      padding: 30px;
+      color: #333;
+    }
+
+    h2, h3 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      margin-bottom: 40px;
+      max-width: 1000px;
+      margin-inline: auto;
+    }
+
+    form div {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #555;
+    }
+
+    input, select {
+      padding: 10px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #fefefe;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: #3498db;
+      outline: none;
+    }
+
+    button {
+      grid-column: span 3;
+      padding: 12px;
+      font-size: 16px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #2980b9;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 15px;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      background: #f2f2f2;
+      color: #333;
+    }
+
+    tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+
+    td a {
+      color: #3498db;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    td a:hover {
+      text-decoration: underline;
+      color: #2c3e50;
+    }
+
+    hr {
+      margin: 40px auto;
+      border: none;
+      border-top: 2px dashed #ddd;
+      width: 60%;
+    }
+
+    @media (max-width: 768px) {
+      form {
+        grid-template-columns: 1fr;
+      }
+
+      button {
+        grid-column: span 1;
+      }
+
+      table {
+        font-size: 14px;
+      }
+
+      th, td {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<h2>{{ editing_batch and 'Edit Batch' or 'Create New Batch' }}</h2>
+
+<form method="POST" id="batchForm">
+  {% if editing_batch %}
+    <input type="hidden" name="batch_id" value="{{ editing_batch.id }}">
+  {% endif %}
+
+  <div>
+    <label>Batch Name</label>
+    <input type="text" name="batch_name" required value="{{ editing_batch.batch_name if editing_batch else '' }}">
+  </div>
+
+  <div>
+    <label>Batch Time</label>
+    <input type="text" name="batch_time" required value="{{ editing_batch.batch_time if editing_batch else '' }}">
+  </div>
+
+  <div>
+    <label>Duration (optional)</label>
+    <input type="text" name="duration" value="{{ editing_batch.duration if editing_batch else '' }}">
+  </div>
+
+  <div>
+    <label>Start Date</label>
+    <input type="date" name="start_date" required value="{{ editing_batch.start_date if editing_batch else '' }}">
+  </div>
+
+  <div>
+    <label>Status</label>
+    <select name="status">
+      <option value="Active" {{ 'selected' if editing_batch and editing_batch.status == 'Active' else '' }}>Active</option>
+      <option value="Completed" {{ 'selected' if editing_batch and editing_batch.status == 'Completed' else '' }}>Completed</option>
+      <option value="Closed" {{ 'selected' if editing_batch and editing_batch.status == 'Closed' else '' }}>Closed</option>
+    </select>
+  </div>
+
+  <div></div> <!-- Spacer -->
+  <button type="submit">{{ editing_batch and 'Update Batch' or 'Create Batch' }}</button>
+</form>
+
+<hr>
+
+<h3>📋 All Batches</h3>
+
+<table>
+  <tr>
+    <th>Batch ID</th>
+    <th>Name</th>
+    <th>Time</th>
+    <th>Start Date</th>
+    <th>Status</th>
+    <th>Total Students</th>
+    <th>Actions</th>
+  </tr>
+  {% for batch in batches %}
+  <tr>
+    <td>{{ batch.batch_code }}</td>
+    <td>{{ batch.batch_name }}</td>
+    <td>{{ batch.batch_time }}</td>
+    <td>{{ batch.start_date }}</td>
+    <td>{{ batch.status }}</td>
+    <td>{{ batch.student_count }}</td>
+    <td>
+      <a href="/center/manage_batches?edit={{ batch.id }}">Edit</a> |
+      <a href="/center/delete_batch/{{ batch.id }}" onclick="return confirm('Delete this batch?')">Delete</a> |
+      <a href="/center/add_students_to_batch/{{ batch.id }}">Add Students</a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+<script>
+  const form = document.getElementById('batchForm');
+  form.addEventListener('submit', function () {
+    setTimeout(() => form.reset(), 100);
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Student Payment</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f7f9;
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 25px 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 30px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    select,
+    textarea {
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+      height: 70px;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #007BFF;
+      outline: none;
+    }
+
+    .full-width {
+      grid-column: span 2;
+    }
+
+    .submit-btn {
+      grid-column: span 2;
+      background-color: #007BFF;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .submit-btn:hover {
+      background-color: #0056b3;
+    }
+
+    .message {
+      text-align: center;
+      color: green;
+      margin-top: 15px;
+      grid-column: span 2;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Add Student Payment</h2>
+  <form method="POST">
+    <div class="form-group">
+      <label for="student_id">Student ID</label>
+      <input type="text" name="student_id" id="student_id" required onblur="fetchDetails()">
+    </div>
+
+    <div class="form-group">
+      <label>Student Name</label>
+      <input type="text" id="student_name" disabled>
+    </div>
+
+    <div class="form-group">
+      <label>Batch ID</label>
+      <input type="text" id="batch_id" disabled>
+    </div>
+
+    <div class="form-group">
+      <label>Admission Date</label>
+      <input type="text" id="admission_date" disabled>
+    </div>
+
+    <div class="form-group">
+      <label>Payment Date</label>
+      <input type="date" name="payment_date" required>
+    </div>
+
+    <div class="form-group">
+      <label>Actual Payment Date</label>
+      <input type="date" name="actual_payment_date" required>
+    </div>
+
+    <div class="form-group">
+      <label>Payment Amount</label>
+      <input type="number" name="payment_amount" step="0.01" required>
+    </div>
+
+    <div class="form-group">
+      <label>Balance Amount:</label>
+      <input type="text" id="balance_amount" name="balance_amount" readonly>
+      <label>Expected Balance After Payment:</label>
+      <span id="updated_balance" style="font-weight: bold; color: blue;"></span>
+
+    </div>
+
+    <div class="form-group">
+      <label>Payment Mode</label>
+      <select name="payment_mode" required>
+        <option>Cash</option>
+        <option>UPI</option>
+        <option>QR Scan</option>
+        <option>Bank Transfer</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Payment Status</label>
+      <select name="payment_status" required>
+        <option>Success</option>
+        <option>Pending</option>
+        <option>Cancelled</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Installment Name</label>
+      <input type="text" name="installment_name">
+    </div>
+
+    <div class="form-group">
+      <label>Remarks</label>
+      <textarea name="remarks"></textarea>
+    </div>
+
+    <input type="submit" class="submit-btn" value="Submit Payment">
+
+    <p class="message">{{ msg }}</p>
+  </form>
+</div>
+
+<!-- jQuery for student autofill -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  function fetchDetails() {
+    const student_id = $('#student_id').val();
+    $.post('/get_student_details', {student_id: student_id}, function(data) {
+      if(data.status === 'success'){
+        $('#student_name').val(data.name);
+        $('#batch_id').val(data.batch_id);
+        $('#admission_date').val(data.admission_date);
+
+        // handle balance logic
+        if (data.balance_amount !== null) {
+          $('#balance_amount').val(data.balance_amount.toFixed(2)).prop('readonly', true);
+        } else {
+          $('#balance_amount').val('').prop('readonly', false);
+        }
+      } else {
+        alert("Student not found");
+        $('#student_name, #batch_id, #admission_date, #balance_amount').val('');
+      }
+    });
+  }
+
+  // Automatically update balance when amount entered
+ $(document).on('input', 'input[name="payment_amount"]', function() {
+  const paymentAmount = parseFloat($(this).val());
+  const currentBalance = parseFloat($('#balance_amount').val());
+
+  if (!isNaN(paymentAmount) && !isNaN(currentBalance)) {
+    const newBalance = (currentBalance - paymentAmount).toFixed(2);
+    $('#updated_balance').text(newBalance);
+  } else {
+    $('#updated_balance').text('');
+  }
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Courses</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 30px;
+      background: #f5f7fa;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 40px;
+      color: #333;
+      font-size: 28px;
+    }
+
+    .course-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .course-card {
+      background: #fff;
+      border: 2px solid #007bff20;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .course-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+      border-color: #007bff40;
+    }
+
+    .course-thumb {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-bottom: 1px solid #eee;
+    }
+
+    .course-info {
+      padding: 20px;
+    }
+
+    .course-info h4 {
+      margin: 0 0 10px;
+      color: #007bff;
+      font-size: 20px;
+    }
+
+    .course-info p {
+      margin: 5px 0;
+      font-size: 14px;
+      color: #444;
+    }
+
+    .view-btn {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 10px 18px;
+      background-color: #007bff;
+      color: #fff;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+
+    .view-btn:hover {
+      background-color: #0056b3;
+    }
+
+    @media (max-width: 768px) {
+      .course-grid {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+
+<h2>📚 My Courses</h2>
+
+{% if courses %}
+  <div class="course-grid">
+    {% for course in courses %}
+      <div class="course-card">
+        <img src="{{ url_for('static', filename='uploads/courses/' ~ course.thumbnail) }}" alt="Course Image" class="course-thumb">
+        <div class="course-info">
+          <h4>{{ course.course_title }}</h4>
+          <p><strong>Course Code:</strong> {{ course.course_code }}</p>
+          <p><strong>Duration:</strong> {{ course.course_duration }}</p>
+          <a href="/student/view_course/{{ course.id }}" class="view-btn">View Course</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p style="text-align: center; font-size: 18px; color: #777;">No courses assigned yet.</p>
+{% endif %}
+
+</body>
+</html>

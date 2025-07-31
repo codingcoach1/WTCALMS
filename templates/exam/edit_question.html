@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Edit Question</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #e9eef4;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 50px auto;
+      background: #fff;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    h3 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #2c3e50;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+      color: #34495e;
+    }
+
+    
+    input[type="text"] {
+      width: 90%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: border 0.3s ease;
+    }
+
+    select{
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: border 0.3s ease;
+    }
+
+    textarea{
+      width: 95%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: border 0.3s ease;
+    }
+
+
+    select:focus,
+    input:focus,
+    textarea:focus {
+      border-color: #3498db;
+      outline: none;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .option-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background-color: #27ae60;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .btn-submit:hover {
+      background-color: #219150;
+    }
+
+    .alert {
+      padding: 12px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .alert-success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .alert-error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    @media (max-width: 600px) {
+      .option-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h3>✏️ Edit Question</h3>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ 'success' if category == 'success' else 'error' }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form action="{{ url_for('update_question', question_id=question['id']) }}" method="POST">
+      <label>Course</label>
+      <select name="course_id" required>
+        {% for course in courses %}
+          <option value="{{ course['id'] }}" {% if course['id'] == question['course_id'] %}selected{% endif %}>
+            {{ course['course_title'] }}
+          </option>
+        {% endfor %}
+      </select>
+
+      <label>Module</label>
+      <select name="module_id" required>
+        {% for module in modules %}
+          <option value="{{ module['id'] }}" {% if module['id'] == question['module_id'] %}selected{% endif %}>
+            {{ module['module_title'] }}
+          </option>
+        {% endfor %}
+      </select>
+
+      <label>Question</label>
+      <textarea name="question_text" rows="3" required>{{ question['question_text'] }}</textarea>
+
+      <div class="option-grid">
+        {% for i in range(1, 5) %}
+          <div class="option-group">
+            <label>Option {{ i }}</label>
+            <input type="text" name="option_{{ i }}" value="{{ question['option_' ~ i] }}" required>
+          </div>
+        {% endfor %}
+      </div>
+
+      <label>Correct Option</label>
+      <select name="correct_option" required>
+        {% for i in range(1, 5) %}
+          <option value="{{ i }}" {% if question['correct_option'] == i|string %}selected{% endif %}>
+            Option {{ i }} ({{ question['option_' ~ i] }})
+          </option>
+        {% endfor %}
+      </select>
+
+      <button type="submit" class="btn-submit">✅ Update Question</button>
+    </form>
+  </div>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Manage Subscription</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 40px; }
+    .container {
+      background: white;
+      padding: 30px;
+      max-width: 600px;
+      margin: auto;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 { color: #0072ff; text-align: center; margin-bottom: 25px; }
+    label { font-weight: bold; display: block; margin-bottom: 5px; }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    button {
+      background: #0072ff;
+      color: white;
+      padding: 12px;
+      width: 100%;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover { background: #005fc2; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Manage Subscription</h2>
+    <form method="POST">
+      <label>Center Code</label>
+      <input type="text" name="center_code" value="{{ center_code }}" readonly>
+
+      <label>Center Name</label>
+      <input type="text" name="center_name" value="{{ center_name }}" readonly>
+
+      <label>Mobile</label>
+      <input type="text" name="mobile" value="{{ mobile }}" readonly>
+
+      <label>Start Date</label>
+      <input type="date" name="start_date" id="start_date" required value="{{ subscription.start_date if subscription else '' }}">
+
+      <label>Valid For</label>
+      <select name="valid_for" id="valid_for" required>
+        <option value="">-- Select Duration --</option>
+        <option value="7 Days" {{ 'selected' if subscription and subscription.valid_for == '7 Days' else '' }}>7 Days</option>
+        <option value="30 Days" {{ 'selected' if subscription and subscription.valid_for == '30 Days' else '' }}>30 Days</option>
+        <option value="6 Months" {{ 'selected' if subscription and subscription.valid_for == '6 Months' else '' }}>6 Months</option>
+        <option value="1 Year" {{ 'selected' if subscription and subscription.valid_for == '1 Year' else '' }}>1 Year</option>
+      </select>
+
+      <label>End Date</label>
+      <input type="date" name="end_date" id="end_date" required value="{{ subscription.end_date if subscription else '' }}">
+
+      <label>Status</label>
+      <select name="status" required>
+        <option value="Active" {{ 'selected' if subscription and subscription.status == 'Active' else '' }}>Active</option>
+        <option value="Pause" {{ 'selected' if subscription and subscription.status == 'Pause' else '' }}>Pause</option>
+        <option value="Stop" {{ 'selected' if subscription and subscription.status == 'Stop' else '' }}>Stop</option>
+      </select>
+
+      <button type="submit">{{ 'Update Subscription' if subscription else 'Save Subscription' }}</button>
+    </form>
+  </div>
+
+  <script>
+    function updateEndDate() {
+      const startDateInput = document.getElementById('start_date');
+      const durationInput = document.getElementById('valid_for');
+      const endDateInput = document.getElementById('end_date');
+
+      const startDate = startDateInput.value;
+      const duration = durationInput.value;
+
+      if (!startDate || !duration) {
+        endDateInput.value = '';
+        return;
+      }
+
+      const date = new Date(startDate);
+
+      if (duration === "7 Days") date.setDate(date.getDate() + 7);
+      else if (duration === "30 Days") date.setDate(date.getDate() + 30);
+      else if (duration === "6 Months") date.setMonth(date.getMonth() + 6);
+      else if (duration === "1 Year") date.setFullYear(date.getFullYear() + 1);
+
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, '0');
+      const dd = String(date.getDate()).padStart(2, '0');
+
+      endDateInput.value = `${yyyy}-${mm}-${dd}`;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('start_date').addEventListener('change', updateEndDate);
+      document.getElementById('valid_for').addEventListener('change', updateEndDate);
+    });
+  </script>
+</body>
+</html>

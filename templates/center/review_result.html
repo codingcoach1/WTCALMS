@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Review</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f5f6fa;
+            padding: 20px;
+        }
+        h4 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+        .wrong {
+            color: red;
+            font-weight: bold;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        li {
+            padding: 4px 0;
+        }
+    </style>
+</head>
+<body>
+
+<h2>📝 Review Test Result</h2>
+
+{% for q in questions %}
+<div class="card">
+    <p><strong>Q{{ loop.index }}:</strong> {{ q.question_text }}</p>
+    <ul>
+        <li {% if q.selected_option == 'A' %} class="{{ 'correct' if q.is_correct else 'wrong' }}" {% endif %}>
+            A) {{ q.option_1 }}
+        </li>
+        <li {% if q.selected_option == 'B' %} class="{{ 'correct' if q.is_correct else 'wrong' }}" {% endif %}>
+            B) {{ q.option_2 }}
+        </li>
+        <li {% if q.selected_option == 'C' %} class="{{ 'correct' if q.is_correct else 'wrong' }}" {% endif %}>
+            C) {{ q.option_3 }}
+        </li>
+        <li {% if q.selected_option == 'D' %} class="{{ 'correct' if q.is_correct else 'wrong' }}" {% endif %}>
+            D) {{ q.option_4 }}
+        </li>
+    </ul>
+    <p>
+        ✅ Correct Option: 
+        <strong class="text-success">
+            {% if q.correct_option == '1' %}A{% elif q.correct_option == '2' %}B{% elif q.correct_option == '3' %}C{% elif q.correct_option == '4' %}D{% else %}{{ q.correct_option }}{% endif %}
+        </strong><br>
+        📝 Given Answer: 
+        {% if q.selected_option %}
+            <strong class="{% if q.is_correct %}correct{% else %}wrong{% endif %}">
+                {{ q.selected_option }}
+            </strong>
+        {% else %}
+            <strong class="wrong">Not Attempted</strong>
+        {% endif %}
+    </p>
+</div>
+{% endfor %}
+
+</body>
+</html>

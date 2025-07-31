@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ test.name }} - Start Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Bootstrap CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <style>
+        .question-box {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            background: #f8f9fa;
+        }
+        .q-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .q-nav button {
+            width: 40px;
+            height: 40px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+        }
+        .attempted {
+            background-color: #28a745;
+            color: white;
+        }
+        .not-attempted {
+            background-color: #dc3545;
+            color: white;
+        }
+        .question {
+            display: none;
+        }
+    </style>
+
+   <!-- ... Keep your <head> section as-is ... -->
+
+<script>
+    let currentQuestion = 0;
+    let answers = {};
+    let totalTime = {{ duration }} * 60; // total seconds
+    let timerInterval;
+
+    function startTimer() {
+        timerInterval = setInterval(function () {
+            let minutes = Math.floor(totalTime / 60);
+            let seconds = totalTime % 60;
+            document.getElementById("timer").textContent = 
+                String(minutes).padStart(2, '0') + ":" + String(seconds).padStart(2, '0');
+            totalTime--;
+
+            if (totalTime < 0) {
+                clearInterval(timerInterval);
+                alert("⏰ Time's up! Submitting your test...");
+                finishTest(); // auto submit
+            }
+        }, 1000);
+    }
+
+    function showQuestion(index) {
+        const all = document.querySelectorAll('.question');
+        all.forEach(q => q.style.display = 'none');
+        all[index].style.display = 'block';
+        currentQuestion = index;
+
+        const finishBtn = document.getElementById('finish-btn');
+        finishBtn.style.display = (index === all.length - 1) ? 'block' : 'none';
+    }
+
+    function markAttempted(qid) {
+        const btn = document.getElementById('qnav-' + qid);
+        if (btn) {
+            btn.classList.remove('not-attempted');
+            btn.classList.add('attempted');
+        }
+    }
+
+    function nextQuestion() {
+        const total = document.querySelectorAll('.question').length;
+        if (currentQuestion < total - 1) {
+            showQuestion(currentQuestion + 1);
+        }
+    }
+
+    function prevQuestion() {
+        if (currentQuestion > 0) {
+            showQuestion(currentQuestion - 1);
+        }
+    }
+
+    function selectOption(qid, value) {
+        answers[qid] = value;
+        markAttempted(qid);
+    }
+
+    function finishTest() {
+        clearInterval(timerInterval); // stop timer if user submits early
+        const form = document.getElementById('testForm');
+        for (const [qid, val] of Object.entries(answers)) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = `answers[${qid}]`;
+            input.value = val;
+            form.appendChild(input);
+        }
+        form.submit();
+    }
+
+    window.onload = () => {
+        showQuestion(0);
+        startTimer();
+    };
+</script>
+
+</head>
+<body>
+    <div class="container-fluid mt-4 mb-5">
+        <h4 class="text-center mb-4">{{ test.name }}</h4>
+        <div class="text-center mb-3">
+            <h5>🕒 Time Left: <span id="timer"></span></h5>
+        </div>
+
+        <form id="testForm" method="POST" action="/finish_test/{{ test.id }}">
+            <div class="row">
+                <!-- Left: Question Display -->
+                <div class="col-md-8">
+                    {% for q in questions %}
+                    <div class="question" id="q-{{ loop.index0 }}">
+                        <div class="question-box mb-3">
+                            <p><strong>Q{{ loop.index }}:</strong> {{ q.question_text }}</p>
+                            <div>
+                                <label><input type="radio" name="q{{ q.id }}" value="A" onchange="selectOption({{ q.id }}, 'A')"> {{ q.option_1 }}</label><br>
+                                <label><input type="radio" name="q{{ q.id }}" value="B" onchange="selectOption({{ q.id }}, 'B')"> {{ q.option_2 }}</label><br>
+                                <label><input type="radio" name="q{{ q.id }}" value="C" onchange="selectOption({{ q.id }}, 'C')"> {{ q.option_3 }}</label><br>
+                                <label><input type="radio" name="q{{ q.id }}" value="D" onchange="selectOption({{ q.id }}, 'D')"> {{ q.option_4 }}</label>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <!-- Navigation Buttons -->
+                    <div class="text-center mt-3">
+                        <button type="button" class="btn btn-secondary mr-2" onclick="prevQuestion()">Previous</button>
+                        <button type="button" class="btn btn-primary" onclick="nextQuestion()">Next</button>
+                    </div>
+                </div>
+
+                <!-- Right: Question Navigation -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header text-center font-weight-bold">Question Panel</div>
+                        <div class="card-body q-nav justify-content-center">
+                            {% for q in questions %}
+                            <button type="button" id="qnav-{{ q.id }}" class="not-attempted" onclick="showQuestion({{ loop.index0 }})">{{ loop.index }}</button>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Finish Button (Initially Hidden) -->
+                    <div class="text-center mt-4">
+                        <button type="button" id="finish-btn" class="btn btn-success btn-block" onclick="finishTest()" style="display: none;">Finish Test</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

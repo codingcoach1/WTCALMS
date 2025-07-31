@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Watch Courses</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .filter-form {
+      text-align: right;
+      margin-bottom: 20px;
+    }
+
+    .filter-form select {
+      padding: 6px 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .course-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: space-between;
+    }
+
+    .course-card {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      width: calc(33.33% - 13.33px); /* 3 per row */
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .course-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    .course-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .course-content {
+      padding: 15px;
+      flex-grow: 1;
+    }
+
+    .course-content h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .course-content p {
+      margin: 5px 0;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 12px;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+    }
+
+    /* Responsive Media Queries */
+    @media (max-width: 992px) {
+      .course-card {
+        width: calc(50% - 10px); /* 2 per row */
+      }
+    }
+
+    @media (max-width: 600px) {
+      .course-card {
+        width: 100%; /* 1 per row */
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Available Courses</h2>
+
+    <form method="POST" class="filter-form">
+      <label>Filter By:</label>
+      <select name="filter_by" onchange="this.form.submit()">
+        <option value="all" {% if selected_filter == 'all' %}selected{% endif %}>All</option>
+        <option value="admin" {% if selected_filter == 'admin' %}selected{% endif %}>Admin Courses</option>
+        <option value="center" {% if selected_filter == 'center' %}selected{% endif %}>My Courses</option>
+      </select>
+    </form>
+
+    <div class="course-grid">
+      {% for course in courses %}
+      <div class="course-card">
+        <img src="{{ url_for('static', filename='uploads/courses/' ~ course.thumbnail) }}" alt="Course Thumbnail">
+        <div class="course-content">
+          <h3>{{ course.course_title }}</h3>
+          <p><strong>Code:</strong> {{ course.course_code }}</p>
+          <p><strong>Duration:</strong> {{ course.course_duration }}</p>
+          <a href="/center/view_course/{{ course.id }}" class="btn">View Course</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+</body>
+</html>

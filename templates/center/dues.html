@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Outstanding Student Dues</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f9f9f9; padding:30px; }
+    .container { max-width:800px; margin:auto; background:#fff; padding:30px; border-radius:8px;
+                 box-shadow:0 0 10px rgba(0,0,0,0.1); }
+    h2 { text-align:center; color:#333; margin-bottom:20px; }
+    .alert { padding:15px; border-radius:6px; font-size:16px; margin-bottom:20px; }
+    .alert.due     { background:#f8d7da; color:#721c24; border:1px solid #f5c6cb; }
+    .alert.cleared { background:#d4edda; color:#155724; border:1px solid #c3e6cb; }
+    table { width:100%; border-collapse:collapse; margin-top:20px; }
+    th, td { padding:12px; text-align:center; border-bottom:1px solid #ddd; }
+    th { background:#f2f2f2; font-weight:600; }
+    .btn-clear {
+      background:#dc3545; color:#fff; border:none;
+      padding:6px 12px; border-radius:4px; cursor:pointer;
+    }
+    .btn-clear:hover { background:#c82333; }
+    form.clear-form { margin:0; }
+    .no-record { text-align:center; color:#666; margin-top:30px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📋 Outstanding Student Dues</h2>
+
+    {% if dues_list %}
+      <div class="alert due">
+        You have {{ dues_list|length }} student{{ 's' if dues_list|length > 1 else '' }} with outstanding dues.
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Student ID</th>
+            <th>Name</th>
+            <th>Admission Date</th>
+            <th>Months Due</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in dues_list %}
+            <tr>
+              <td>{{ s.student_id }}</td>
+              <td>{{ s.name }}</td>
+              <td>{{ s.admission_date }}</td>
+              <td>{{ s.due_months }}</td>
+              <td>
+                <form class="clear-form" action="{{ url_for('clear_due', student_id=s.student_id) }}" method="POST">
+                  <button type="submit" class="btn-clear">Clear 1 Month</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="alert cleared">
+        🎉 All dues are clear! No outstanding balances.
+      </div>
+    {% endif %}
+  </div>
+</body>
+</html>

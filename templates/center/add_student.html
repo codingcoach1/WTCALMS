@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Admissions</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f9f9f9; padding:30px;}
+    .container { max-width:1000px; margin:auto; }
+    h1 { text-align:center; color:#333; margin-bottom:30px; }
+
+    /* Bulk Section */
+    .bulk-section { background:#fff; padding:30px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1); min-height:250px; margin-bottom:40px; }
+    .actions { display:flex; justify-content:space-between; align-items:center; margin:15px 0; }
+    .download-btn { display:inline-flex; align-items:center; padding:8px 12px; background:#28a745; color:#fff; border-radius:4px; text-decoration:none; font-weight:600; }
+    .download-btn i { margin-right:6px; }
+    .download-btn:hover { background:#218838; }
+
+    /* Single Section */
+    .single-section { background:#fff; padding:30px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1); }
+    fieldset { border:2px solid #007bff; border-radius:8px; padding:20px; }
+    legend { font-size:20px; color:#007bff; font-weight:bold; margin-bottom:20px; }
+    form { display:flex; flex-wrap:wrap; gap:20px; }
+    .form-group { flex:1 1 45%; display:flex; flex-direction:column; }
+    .form-group-full { flex:1 1 100%; display:flex; flex-direction:column; }
+    label { font-weight:600; margin-bottom:5px; }
+    input, select, textarea { padding:8px 10px; border:1px solid #ccc; border-radius:4px; width:100%; box-sizing:border-box; }
+    textarea { resize: vertical; min-height:60px; }
+    .submit-btn { margin-top:20px; padding:10px 30px; background:#007bff; color:#fff; border:none; border-radius:4px; cursor:pointer; }
+    .submit-btn:hover { background:#0056b3; }
+
+    /* Preview */
+    .preview-btn { margin-top:8px; padding:6px 12px; background:#17a2b8; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; align-self:flex-start; }
+    .preview-btn i { margin-right:6px; }
+    .preview-btn:hover { background:#117a8b; }
+    #photo_preview { display:none; margin-top:12px; max-width:200px; border:1px solid #ccc; border-radius:4px; overflow:hidden; }
+    #photo_preview img { width:100%; height:auto; display:block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎓 Student Admissions</h1>
+
+    <!-- Bulk Admission -->
+    <div class="bulk-section">
+      <fieldset>
+        <legend>Bulk Student Admission</legend>
+        <div class="actions">
+          <a href="{{ url_for('download_sample') }}" class="download-btn">
+            <i class="fas fa-file-download"></i> Download Sample Excel File
+          </a>
+          <form action="{{ url_for('bulk_admission') }}" method="POST" enctype="multipart/form-data" style="display:flex; gap:10px;">
+            <input type="file" name="excel_file" accept=".xlsx,.xls" required>
+            <button type="submit">Upload Data</button>
+          </form>
+        </div>
+        {% if uploaded_data %}
+        <table>
+          <thead><tr>
+            <th>Student ID</th><th>Name</th><th>Mobile</th><th>Email</th><th>Admission Date</th>
+          </tr></thead>
+          <tbody>
+            {% for s in uploaded_data %}
+            <tr>
+              <td>{{ s.student_id }}</td><td>{{ s.name }}</td><td>{{ s.mobile }}</td><td>{{ s.email }}</td><td>{{ s.admission_date }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+      </fieldset>
+    </div>
+
+    <!-- Single Admission -->
+    <div class="single-section">
+      <fieldset>
+        <legend>Single Student Admission</legend>
+        <form action="{{ url_for('add_student') }}" method="POST" enctype="multipart/form-data">
+          <!-- Row 1 -->
+          <div class="form-group">
+            <label>Student ID</label>
+            <input type="text" name="student_id" id="student_id_input" autocomplete="off" required >
+            <small id="student_id_warn" style="color:orange; display:none; ">
+              ⚠️ Duplicate admission found
+            </small>
+          </div>
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" name="name" required>
+          </div>
+
+          <!-- Row 2 -->
+          <div class="form-group">
+            <label>Father's Name</label>
+            <input type="text" name="father_name">
+          </div>
+          <div class="form-group">
+            <label>Date of Birth</label>
+            <input type="date" name="dob">
+          </div>
+
+          <!-- Row 3 -->
+          <div class="form-group">
+            <label>Gender</label>
+            <select name="gender">
+              <option value="">--Select--</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Mobile Number</label>
+            <input type="text" name="mobile" required>
+          </div>
+
+          <!-- Row 4 -->
+          <div class="form-group">
+            <label>Alternate Mobile</label>
+            <input type="text" name="alt_mobile">
+          </div>
+          <div class="form-group">
+            <label>Email ID</label>
+            <input type="email" name="email" required>
+          </div>
+
+          <!-- Row 5 -->
+          <div class="form-group-full">
+            <label>Address</label>
+            <textarea name="address"></textarea>
+          </div>
+
+          <!-- Row 6 -->
+          <div class="form-group">
+            <label>City</label>
+            <input type="text" name="city">
+          </div>
+          <div class="form-group">
+            <label>Pin Code</label>
+            <input type="text" name="pin_code">
+          </div>
+
+          <!-- Row 7 -->
+          <div class="form-group">
+            <label>State</label>
+            <input type="text" name="state">
+          </div>
+          <div class="form-group">
+            <label>Qualification</label>
+            <select name="qualification">
+              <option value="">--Select--</option>
+              <option>10th</option>
+              <option>12th</option>
+              <option>Graduate</option>
+              <option>Post Graduate</option>
+            </select>
+          </div>
+
+          <!-- Row 8 -->
+          <div class="form-group">
+            <label>Passing Year</label>
+            <input type="text" name="passing_year">
+          </div>
+          <div class="form-group">
+            <label>School/College</label>
+            <input type="text" name="school">
+          </div>
+
+          <!-- Row 9 -->
+          <div class="form-group">
+            <label>Board/University</label>
+            <input type="text" name="board">
+          </div>
+          <div class="form-group">
+            <label>Admission Date</label>
+            <input type="date" name="admission_date" required>
+          </div>
+
+          <!-- Photo + Preview -->
+          <div class="form-group-full">
+            <label>Photo</label>
+            <input type="file" name="photo" id="photo_input" accept="image/*">
+            <button type="button" id="preview_btn" class="preview-btn">
+              <i class="fas fa-eye"></i> Preview Photo
+            </button>
+            <div id="photo_preview">
+              <img id="preview_img" src="" alt="Photo Preview">
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div class="form-group-full">
+            <label>Status</label>
+            <select name="status">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+              <option value="Completed">Completed</option>
+              <option value="Dropped">Dropped</option>
+            </select>
+          </div>
+
+          <button type="submit" class="submit-btn">Submit Admission</button>
+        </form>
+      </fieldset>
+    </div>
+  </div>
+
+  <script>
+  const sidInput = document.getElementById('student_id_input');
+  const warnEl   = document.getElementById('student_id_warn');
+
+  // whenever the field loses focus (or you could use 'input' for live-check):
+  sidInput.addEventListener('blur', () => {
+    const val = sidInput.value.trim();
+    if (!val) {
+      warnEl.style.display = 'none';
+      return;
+    }
+
+    fetch(`/check_student_id?student_id=${encodeURIComponent(val)}`)
+      .then(r => r.json())
+      .then(js => {
+        if (js.exists) {
+          warnEl.style.display = 'block';
+        } else {
+          warnEl.style.display = 'none';
+        }
+      })
+      .catch(err => {
+        console.error('Check failed', err);
+      });
+  });
+</script>
+
+
+  <script>
+    const input     = document.getElementById('photo_input');
+    const preview   = document.getElementById('photo_preview');
+    const img       = document.getElementById('preview_img');
+    const previewBtn= document.getElementById('preview_btn');
+
+    input.addEventListener('change', () => {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          img.src = e.target.result;
+          if (preview.style.display === 'block') img.style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+      } else {
+        img.src = ''; preview.style.display = 'none';
+      }
+    });
+
+    previewBtn.addEventListener('click', () => {
+      if (!input.files || !input.files[0]) {
+        alert('Please choose a photo first.');
+        return;
+      }
+      if (preview.style.display === 'block') {
+        preview.style.display = 'none';
+      } else {
+        if (!img.src) {
+          const reader = new FileReader();
+          reader.onload = e => {
+            img.src = e.target.result;
+            img.style.display = 'block';
+            preview.style.display = 'block';
+          };
+          reader.readAsDataURL(input.files[0]);
+        } else {
+          img.style.display = 'block';
+          preview.style.display = 'block';
+        }
+      }
+    });
+  </script>
+</body>
+</html>

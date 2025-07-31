@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ course.course_title }} - Modules</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f8f9fb;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h2, h3, h4 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    .course-details {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .module-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .module {
+      background-color: white;
+      padding: 20px 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      text-align: center;
+    }
+
+    .module:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .module a {
+      text-decoration: none;
+      color: #007bff;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .module a:hover {
+      color: #0056b3;
+    }
+
+    .no-modules {
+      text-align: center;
+      color: #888;
+      font-size: 16px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>{{ course.course_title }}</h2>
+  <div class="course-details">
+    <h4>Course Code: {{ course.course_code }} | Duration: {{ course.course_duration }}</h4>
+  </div>
+
+  <h3>Modules:</h3>
+  <div class="module-container">
+    {% for module in modules %}
+      <div class="module">
+        <a href="/center/view_module_lessons/{{ module.id }}">{{ module.module_title }}</a>
+      </div>
+    {% else %}
+      <div class="no-modules">No modules found.</div>
+    {% endfor %}
+  </div>
+
+</body>
+</html>

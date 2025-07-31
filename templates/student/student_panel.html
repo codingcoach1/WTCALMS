@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Panel</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f2f5;
+    }
+
+    header {
+      background: #1e90ff;
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 15px 25px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    header img {
+      height: 60px;
+      width: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 20px;
+      border: 2px solid #fff;
+    }
+
+    header .info strong {
+      font-size: 18px;
+    }
+
+    .container {
+      display: flex;
+      height: calc(100vh - 90px);
+    }
+
+    .sidebar {
+      background: #2c3e50;
+      color: white;
+      width: 220px;
+      transition: width 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sidebar.minimized {
+      width: 60px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sidebar ul li {
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .sidebar ul li:hover {
+      background: #34495e;
+    }
+
+    .sidebar ul li i {
+      width: 24px;
+      text-align: center;
+    }
+
+    .sidebar ul li span {
+      margin-left: 12px;
+      white-space: nowrap;
+    }
+
+    .sidebar.minimized ul li span {
+      display: none;
+    }
+
+    .toggle-btn {
+      position: absolute;
+      top: 20px;
+      right: -15px;
+      background: #1e90ff;
+      color: white;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      font-size: 18px;
+    }
+
+    .content {
+      flex: 1;
+      padding: 0;
+      overflow-y: auto;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    footer {
+      background: #1e90ff;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .logout {
+      color: white;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .logout i {
+      margin-right: 6px;
+    }
+
+    @media screen and (max-width: 768px) {
+      .sidebar {
+        position: absolute;
+        z-index: 10;
+        height: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <img src="{{ url_for('static', filename=student['photo'].replace('\\', '/')) }}" alt="Student Photo">
+    <div class="info">
+      <strong>{{ student['name'] }}</strong>
+      <small>Center Code: {{ student['center_code'] }} | Student ID: {{ student['student_id'] }}</small>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="toggle-btn" onclick="toggleSidebar()">&#x3E;</div>
+      <ul>
+        <li onclick="loadIframe('/student/profile')"><i class="fas fa-user"></i> <span>Profile</span></li>
+        <li onclick="loadIframe('/student/my_courses')"><i class="fas fa-book-open"></i> <span>My Courses</span></li>
+        <li onclick="loadIframe('/student_payment_history/{{ student.student_id }}')"><i class="fas fa-wallet"></i> <span>My Payments</span></li>
+        <li onclick="loadIframe('/student/my_tests')"><i class="fas fa-file-alt"></i> <span>My Tests</span></li>
+        <li onclick="loadIframe('/student/my_results')"><i class="fas fa-chart-line"></i> <span>My Results</span></li>
+        <li onclick="loadIframe('/student/live_classes')"><i class="fas fa-chart-line"></i> <span>Live Classes</span></li>
+        <li onclick="alert('Certificate section coming soon!')"><i class="fas fa-certificate"></i> <span>Certificate</span></li>
+        <li><a href="/student_logout" class="logout"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+      </ul>
+    </div>
+
+    <!-- Iframe -->
+    <div class="content">
+      <iframe id="main-iframe" src="/student/profile"></iframe>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div>Center: {{ center['name'] }} | Mobile: {{ center['mobile'] }} | Email: {{ center['email'] }}</div>
+    <div id="clock"></div>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('minimized');
+    }
+
+    function loadIframe(path) {
+      document.getElementById("main-iframe").src = path;
+    }
+
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clock').textContent = now.toLocaleString();
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
+
+</body>
+</html>

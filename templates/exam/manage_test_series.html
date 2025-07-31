@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Test Series</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f8;
+            padding: 40px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        form {
+            background: #fff;
+            padding: 25px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: #4a90e2;
+        }
+
+        button[type="submit"] {
+            margin-top: 25px;
+            padding: 12px 20px;
+            background-color: #4a90e2;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+            grid-column: span 2;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #357abd;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 40px;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        tr:hover {
+            background-color: #f1f9ff;
+            cursor: pointer;
+        }
+
+        a {
+            color: #e74c3c;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            button[type="submit"] {
+                grid-column: span 1;
+            }
+        }
+    </style>
+    <script>
+        function fillForm(id, name, type, status, duration) {
+            document.getElementById("test_id").value = id;
+            document.getElementById("name").value = name;
+            document.getElementById("type").value = type;
+            document.getElementById("status").value = status;
+            document.getElementById("duration").value = duration;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</head>
+<body>
+
+    <h2>🧪 Test Series Manager</h2>
+
+    <form method="POST">
+        <input type="hidden" name="test_id" id="test_id">
+        <div class="form-grid">
+            <div>
+                <label for="name">Test Name:</label>
+                <input type="text" name="name" id="name" required>
+            </div>
+            <div>
+                <label for="type">Type:</label>
+                <select name="type" id="type" required>
+                    <option value="Mock Test">Mock Test</option>
+                    <option value="Unit Test">Unit Test</option>
+                    <option value="Monthly Test">Monthly Test</option>
+                    <option value="Final Test">Final Test</option>
+                </select>
+            </div>
+            <div>
+                <label for="status">Status:</label>
+                <select name="status" id="status" required>
+                    <option value="Active">Active</option>
+                    <option value="Pause">Pause</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+            </div>
+            <div>
+                <label for="duration">Duration (Minutes):</label>
+                <input type="number" name="duration" id="duration" min="1" required>
+            </div>
+
+            <button type="submit">💾 Save Test</button>
+        </div>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th>Duration</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for test in tests %}
+            <tr onclick="fillForm('{{ test.id }}', '{{ test.name }}', '{{ test.type }}', '{{ test.status }}', '{{ test.duration }}')">
+                <td>{{ test.name }}</td>
+                <td>{{ test.type }}</td>
+                <td>{{ test.status }}</td>
+                <td>{{ test.created_at }}</td>
+                <td>{{ test.duration }}</td>
+                <td><a href="/delete_series/{{ test.id }}" onclick="return confirm('Delete this test?')">Delete</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

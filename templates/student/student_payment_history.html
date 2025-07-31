@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Payment History — {{ student.name }}</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background:#f4f7fb; margin:0; padding:40px; color:#333; }
+    h2 { text-align:center; color:#2c3e50; margin-bottom:20px; }
+
+    /* Alerts */
+    .alert { max-width:800px; margin: auto 0 25px; padding:15px; border-radius:6px; font-size:16px; }
+    .alert.due     { background:#f8d7da; color:#721c24; border:1px solid #f5c6cb; }
+    .alert.cleared { background:#d4edda; color:#155724; border:1px solid #c3e6cb; }
+
+    .container { max-width:800px; margin:auto; }
+    .student-details {
+      background:#fff; padding:20px; border-radius:10px;
+      box-shadow:0 2px 6px rgba(0,0,0,0.1); margin-bottom:20px;
+    }
+    .student-details div { margin-bottom:6px; }
+    .student-details strong { color:#555; }
+
+    table {
+      width:100%; border-collapse:collapse; background:#fff;
+      box-shadow:0 2px 8px rgba(0,0,0,0.06); border-radius:10px; overflow:hidden;
+    }
+    th, td {
+      padding:12px 15px; text-align:center; border-bottom:1px solid #eaeaea;
+    }
+    th { background:#f0f4f8; color:#333; font-weight:600; }
+    tr:hover { background:#f9fbff; }
+
+    .btn {
+      padding:6px 12px; border-radius:6px; font-size:14px; font-weight:500;
+      color:white; text-decoration:none; display:inline-block; transition:background .3s;
+    }
+    .btn-print { background:#007BFF; }
+    .btn-print:hover { background:#0056b3; }
+
+    .no-record { color:red; text-align:center; font-weight:bold; margin-top:20px; }
+    @media(max-width:768px){
+      body { padding:20px; }
+      table { font-size:13px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>💳 Payment History — {{ student.name }}</h2>
+
+    {% if due_months > 0 %}
+      <div class="alert due">
+        Your {{ due_months }} payment{{ 's' if due_months>1 }} are due.
+        Please clear them as soon as possible.
+      </div>
+    {% else %}
+      <div class="alert cleared">
+        🎉 All dues are clear! Here is your complete payment history.
+      </div>
+    {% endif %}
+
+    <div class="student-details">
+      <div><strong>Student ID:</strong> {{ student.student_id }}</div>
+      <div><strong>Batch ID:</strong> {{ student.batch_id }}</div>
+      <div><strong>Center:</strong> {{ center.center_name }} ({{ center.center_code }})</div>
+      <div><strong>Admission Date:</strong> {{ student.admission_date }}</div>
+    </div>
+
+    {% if payments %}
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Installment</th><th>Date</th><th>Amount</th>
+            <th>Mode</th><th>Status</th><th>Balance</th><th>Remarks</th><th>Slip</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in payments %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ p.installment_name }}</td>
+              <td>{{ p.payment_date }}</td>
+              <td>₹{{ '%.2f'|format(p.payment_amount) }}</td>
+              <td>{{ p.payment_mode }}</td>
+              <td>{{ p.payment_status }}</td>
+              <td>₹{{ '%.2f'|format(p.balance_amount) }}</td>
+              <td>{{ p.remarks }}</td>
+              <td>
+                <a href="{{ url_for('payment_slip', payment_id=p.id) }}"
+                   target="_blank" class="btn btn-print">
+                  View
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="no-record">No payment records found.</p>
+    {% endif %}
+  </div>
+</body>
+</html>

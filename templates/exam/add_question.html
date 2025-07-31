@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Questions</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 30px;
+            color: #2c3e50;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            padding: 30px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .option-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .option-grid label {
+            margin-top: 10px;
+        }
+
+        input[type="file"] {
+            padding: 5px;
+        }
+
+
+        .form-box {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 25px 30px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        h3 {
+            margin-top: 0;
+            color: #007bff;
+            font-size: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input,textarea{
+            width: 95%;
+            padding: 10px 12px;
+            margin-top: 6px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+         select{
+            width: 100%;
+            padding: 10px 12px;
+            margin-top: 6px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+    
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #007bff;
+            outline: none;
+            background: #f9fcff;
+        }
+
+        button {
+            margin-top: 20px;
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        a {
+            display: inline-block;
+            margin: 10px 0;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .message-box ul {
+            list-style: none;
+            padding: 0;
+            margin: 15px auto;
+            max-width: 600px;
+        }
+
+        .message-box li {
+            font-weight: 600;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .message-box .success {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message-box .error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h2>➕ Add Questions</h2>
+
+<div class="message-box">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul>
+        {% for category, message in messages %}
+          <li class="{{ 'success' if category == 'success' else 'error' }}">
+            {{ message }}
+          </li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+</div>
+
+<div class="container">
+
+    <!-- Left Form: Add Question -->
+    <div class="form-box">
+        <h3>Add Question (One by One)</h3>
+        <form method="POST" id="questionForm">
+            <input type="hidden" name="edit_id" id="edit_id">
+
+            <label>Course:</label>
+            <select name="course_id" id="courseDropdown" required>
+                <option value="">-- Select Course --</option>
+                {% for course in courses %}
+                    <option value="{{ course.id }}">{{ course.course_title }}</option>
+                {% endfor %}
+            </select>
+
+            <label>Module:</label>
+            <select name="module_id" id="moduleDropdown" required>
+                <option value="">-- Select Module --</option>
+            </select>
+
+            <label>Question:</label>
+            <textarea name="question" id="question_text" rows="3" required></textarea>
+
+            <div class="option-grid">
+                <div>
+                    <label>Option 1:</label>
+                    <input name="option_1" id="option_1" required>
+                </div>
+                <div>
+                    <label>Option 2:</label>
+                    <input name="option_2" id="option_2" required>
+                </div>
+                <div>
+                    <label>Option 3:</label>
+                    <input name="option_3" id="option_3" required>
+                </div>
+                <div>
+                    <label>Option 4:</label>
+                    <input name="option_4" id="option_4" required>
+                </div>
+            </div>
+
+            <label>Correct Option (1-4):</label>
+            <input name="correct_option" id="correct_option" required>
+
+
+            <button type="submit" id="submitBtn">Add Question</button>
+        </form>
+    </div>
+
+    <!-- Right: Bulk Upload -->
+    {% if is_admin %}
+    <div class="form-box">
+        <h3>📤 Bulk Upload Questions</h3>
+        <a href="{{ url_for('static', filename='sample_questions.xlsx') }}" download>📥 Download Sample Excel</a>
+
+        <form method="POST" action="/upload_questions" enctype="multipart/form-data">
+            <label>Select Excel File:</label>
+            <input type="file" name="excel_file" accept=".xlsx" required>
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+document.getElementById("courseDropdown").addEventListener("change", function() {
+    var courseId = this.value;
+    fetch("/get_modules/" + courseId)
+        .then(response => response.json())
+        .then(data => {
+            var moduleDropdown = document.getElementById("moduleDropdown");
+            moduleDropdown.innerHTML = '<option value="">-- Select Module --</option>';
+            data.forEach(module => {
+                var opt = document.createElement("option");
+                opt.value = module.id;
+                opt.textContent = module.title;
+                moduleDropdown.appendChild(opt);
+            });
+        });
+});
+
+function editQuestion(q) {
+    document.getElementById("edit_id").value = q.id;
+    document.getElementById("question_text").value = q.question_text;
+    document.getElementById("option_1").value = q.option_1;
+    document.getElementById("option_2").value = q.option_2;
+    document.getElementById("option_3").value = q.option_3;
+    document.getElementById("option_4").value = q.option_4;
+    document.getElementById("correct_option").value = q.correct_option;
+    document.getElementById("courseDropdown").value = q.course_id;
+
+    fetch("/get_modules/" + q.course_id)
+        .then(response => response.json())
+        .then(data => {
+            var moduleDropdown = document.getElementById("moduleDropdown");
+            moduleDropdown.innerHTML = '<option value="">-- Select Module --</option>';
+            data.forEach(mod => {
+                var opt = document.createElement("option");
+                opt.value = mod.id;
+                opt.textContent = mod.title;
+                moduleDropdown.appendChild(opt);
+            });
+            moduleDropdown.value = q.module_id;
+        });
+
+    document.getElementById("submitBtn").innerText = "Update Question";
+}
+</script>
+
+</body>
+</html>

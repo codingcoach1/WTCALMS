@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Manage Lessons</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    form {
+      margin-bottom: 30px;
+    }
+
+    input[type="text"], input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 15px;
+    }
+
+    button, .icon-btn {
+      background: #007bff;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    button:hover, .icon-btn:hover {
+      background: #0056b3;
+    }
+
+    .lesson-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .lesson-card {
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 10px;
+      border-left: 5px solid #17a2b8;
+      box-sizing: border-box;
+      height: 100%;
+    }
+
+    iframe, video {
+      width: 100%;
+      height: 200px;
+      border: none;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    .lesson-title {
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .lesson-actions {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-btn {
+      padding: 8px 12px;
+      font-size: 18px;
+      border-radius: 50%;
+      color: #fff;
+    }
+
+    .edit-icon { background-color: #ffc107; color: #000; }
+    .delete-icon { background-color: #dc3545; }
+    .pdf-icon { background-color: #28a745; }
+
+    @media (max-width: 900px) {
+      .lesson-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .lesson-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <script>
+    function editLesson(id, title, link) {
+      document.getElementById("lesson_id").value = id;
+      document.getElementById("lesson_title").value = title;
+      document.getElementById("video_link").value = link;
+      document.getElementById("submit_btn").innerText = "Update Lesson";
+    }
+  </script>
+</head>
+<body>
+
+<div class="container">
+  <h2>Manage Lessons</h2>
+
+  <form method="POST" action="/add_lesson" enctype="multipart/form-data">
+    <input type="hidden" name="module_id" value="{{ module_id }}">
+    <input type="hidden" id="lesson_id" name="lesson_id" value="">
+    <input type="text" id="lesson_title" name="lesson_title" placeholder="Lesson Title" required>
+    <input type="text" id="video_link" name="video_link" placeholder="Paste YouTube Video Link or Uploaded Video Path" >
+    <input type="file" name="pdf_file" accept="application/pdf">
+    <button type="submit" id="submit_btn"><i class="fas fa-plus-circle"></i>&nbsp;Add Lesson</button>
+  </form>
+
+  <div class="lesson-grid">
+    {% for lesson in lessons %}
+      <div class="lesson-card">
+        <div class="lesson-title">{{ lesson.lesson_title }}</div>
+
+        {% if 'youtube.com' in lesson.video_link or 'youtu.be' in lesson.video_link %}
+          <iframe src="https://www.youtube.com/embed/{{ lesson.video_link | replace('https://www.youtube.com/watch?v=', '') | replace('https://youtu.be/', '') }}" allowfullscreen></iframe>
+        {% else %}
+          <video controls>
+            <source src="{{ lesson.video_link }}" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        {% endif %}
+
+        <div class="lesson-actions">
+          <button class="icon-btn edit-icon" onclick="editLesson('{{ lesson.id }}', '{{ lesson.lesson_title }}', '{{ lesson.video_link }}')" type="button" title="Edit">
+            <i class="fas fa-edit"></i>
+          </button>
+
+          <form method="POST" action="/delete_lesson/{{ lesson.id }}" onsubmit="return confirm('Delete this lesson?');" style="margin: 0;">
+            <button class="icon-btn delete-icon" type="submit" title="Delete">
+              <i class="fas fa-trash"></i>
+            </button>
+          </form>
+
+          {% if lesson.pdf_path %}
+            <a href="{{ url_for('static', filename='uploads/pdfs/' ~ lesson.pdf_path) }}" target="_blank" class="icon-btn pdf-icon" title="View PDF">
+              <i class="fas fa-file-pdf"></i>
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+</body>
+</html>

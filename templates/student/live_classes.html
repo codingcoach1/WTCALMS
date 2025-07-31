@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>My Live Classes</title>
+</head>
+<body>
+  <h1>🎥 My Live Classes</h1>
+
+  <!-- Date-picker form -->
+  <form method="get" action="{{ url_for('student_live_classes') }}">
+    <label>
+      Select Date:
+      <input 
+        type="date" 
+        name="date" 
+        value="{{ selected_date }}" 
+        required
+      >
+    </label>
+    <button type="submit">Show</button>
+  </form>
+
+  <hr>
+
+  {% if not classes %}
+    <p><strong>No Class Schedule</strong> for {{ selected_date }}.</p>
+  {% else %}
+    <div id="classes">
+      {% for cls in classes %}
+        <div class="class-item" 
+             data-start="{{ cls.start_time }}" 
+             data-end  ="{{ cls.end_time or '' }}">
+          <h3>{{ cls.title }}</h3>
+          <p>By {{ cls.conducted_by }}</p>
+          {% if cls.thumbnail %}
+            <img 
+              src="{{ url_for('static', filename=cls.thumbnail) }}" 
+              width="120" 
+              alt="Thumbnail for {{ cls.title }}"
+            ><br>
+          {% endif %}
+
+          <button class="join-btn" disabled>Join</button>
+          <span class="timer"></span>
+        </div>
+        <hr>
+      {% endfor %}
+    </div>
+
+    <script>
+      const now0 = new Date("{{ now_iso }}");
+      function updateTimers() {
+        const now = new Date();
+        document.querySelectorAll('.class-item').forEach(item => {
+          const start = new Date(item.dataset.start);
+          const end   = item.dataset.end ? new Date(item.dataset.end) : null;
+          const btn   = item.querySelector('.join-btn');
+          const tm    = item.querySelector('.timer');
+
+          if (now < start) {
+            // before start: countdown
+            const diff = Math.floor((start - now)/1000);
+            const m = Math.floor(diff/60), s = diff % 60;
+            tm.textContent = `Starts in ${m}m ${s}s`;
+            btn.disabled = true;
+            btn.textContent = 'Join';
+          }
+          else if (end && now > end) {
+            // after end
+            tm.textContent = 'Class ended';
+            btn.disabled = true;
+          }
+          else {
+            // live now
+            tm.textContent = '';
+            btn.disabled = false;
+            btn.textContent = 'Live Now';
+            btn.onclick = () => {
+              // replace with your actual join URL or route
+              window.location.href = `/join_class/${item.dataset.start}`;
+            };
+          }
+        });
+      }
+      setInterval(updateTimers, 1000);
+      updateTimers();
+    </script>
+  {% endif %}
+</body>
+</html>

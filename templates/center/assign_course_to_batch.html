@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Assign Course to Batch</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 40px;
+      background: #f9fafa;
+      color: #333;
+    }
+
+    h2, h3 {
+      color: #2c3e50;
+    }
+
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 30px;
+      max-width: 600px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    button[type="submit"] {
+      margin-top: 20px;
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button[type="submit"]:hover {
+      background: #2980b9;
+    }
+
+    p {
+      margin-top: 15px;
+    }
+
+    .message {
+      color: green;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: left;
+    }
+
+    th {
+      background: #f1f1f1;
+    }
+
+    tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+
+    .remove-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .remove-btn:hover {
+      background: #c0392b;
+    }
+
+    @media (max-width: 600px) {
+      form, table {
+        width: 100%;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<h2>🎓 Assign Course to Batch</h2>
+
+<form method="POST">
+  <label>Select Batch:</label>
+  <select name="batch_id" required>
+    <option value="">--Select--</option>
+    {% for b in batches %}
+      <option value="{{ b.id }}">{{ b.batch_code }} - {{ b.batch_name }}</option>
+    {% endfor %}
+  </select>
+
+  <label>Select Course:</label>
+  <select name="course_id" required>
+    <option value="">--Select--</option>
+    {% for c in courses %}
+      <option value="{{ c.id }}">{{ c.course_code }} - {{ c.course_title }}</option>
+    {% endfor %}
+  </select>
+
+  <button type="submit">➕ Assign</button>
+</form>
+
+{% if message %}
+  <p class="message">{{ message }}</p>
+{% endif %}
+
+<hr>
+<h3>📋 Assigned Courses</h3>
+
+{% if assignments %}
+  <table>
+    <tr>
+      <th>Batch</th>
+      <th>Course</th>
+      <th>Action</th>
+    </tr>
+    {% for row in assignments %}
+    <tr>
+      <td>{{ row.batch_code }} - {{ row.batch_name }}</td>
+      <td>{{ row.course_code }} - {{ row.course_title }}</td>
+      <td>
+        <form method="POST" style="display:inline;">
+          <input type="hidden" name="remove_batch_id" value="{{ row.batch_id }}">
+          <input type="hidden" name="remove_course_id" value="{{ row.course_id }}">
+          <button type="submit" name="remove" class="remove-btn" onclick="return confirm('Remove this course from the batch?');">❌ Remove</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+{% else %}
+  <p>No course assignments yet.</p>
+{% endif %}
+
+</body>
+</html>

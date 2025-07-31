@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Center Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f1f3f6;
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 30px;
+            color: #2c3e50;
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            padding: 40px 60px;
+            justify-items: center;
+        }
+
+        .card {
+            width: 280px;
+            height: 180px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px) scale(1.04);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+        }
+
+        .count {
+            font-size: 42px;
+            font-weight: bold;
+            color: #2980b9;
+        }
+
+        .label {
+            margin-top: 12px;
+            font-size: 18px;
+            color: #555;
+        }
+
+        .card:nth-child(1) .count { color: #3498db; }  /* Students */
+        .card:nth-child(2) .count { color: #1abc9c; }  /* Batches */
+        .card:nth-child(3) .count { color: #f39c12; }  /* Attendance */
+        .card:nth-child(4) .count { color: #e74c3c; }  /* Courses */
+        .card:nth-child(5) .count { color: #8e44ad; }  /* Questions */
+        .card:nth-child(6) .count { color: #2c3e50; }  /* Test Series */
+
+        @media (max-width: 992px) {
+            .dashboard-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .dashboard-container {
+                grid-template-columns: repeat(1, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <h2>📍 Center Dashboard</h2>
+
+    <div class="dashboard-container">
+        <div class="card">
+            <div class="count" data-target="{{ total_students }}">0</div>
+            <div class="label">Total Students</div>
+        </div>
+        <div class="card">
+            <div class="count" data-target="{{ total_batches }}">0</div>
+            <div class="label">Total Batches</div>
+        </div>
+        <div class="card">
+            <div class="count" data-target="{{ todays_attendance }}">0</div>
+            <div class="label">Today's Attendance</div>
+        </div>
+        <div class="card">
+            <div class="count" data-target="{{ total_courses }}">0</div>
+            <div class="label">Total Courses</div>
+        </div>
+        <div class="card">
+            <div class="count" data-target="{{ total_questions }}">0</div>
+            <div class="label">Total Questions</div>
+        </div>
+        <div class="card">
+            <div class="count" data-target="{{ total_test_series }}">0</div>
+            <div class="label">Test Series</div>
+        </div>
+    </div>
+
+    <script>
+        const counters = document.querySelectorAll('.count');
+        counters.forEach(counter => {
+            const updateCount = () => {
+                const target = +counter.getAttribute('data-target');
+                const current = +counter.innerText;
+                const increment = Math.max(1, Math.ceil(target / 80));
+
+                if (current < target) {
+                    counter.innerText = current + increment;
+                    setTimeout(updateCount, 20);
+                } else {
+                    counter.innerText = target;
+                }
+            };
+
+            updateCount();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Manage Adjustments</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    /* Base */
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #eef2f7;
+      margin: 0;
+      padding: 40px 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    /* Flash */
+    .flash {
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+    .flash.success { background: #d4edda; color: #155724; }
+
+    /* Lookup */
+    form.lookup {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+    form.lookup input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .submit-btn {
+      padding: 12px 24px;
+      background: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .submit-btn:hover { background: #0056b3; }
+
+    /* Student Info */
+    .student-info {
+      background: #f8f9fa;
+      padding: 20px 25px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+      gap: 15px;
+    }
+    .student-info div { font-size: 14px; }
+    .student-info strong { font-weight: 600; }
+
+    /* Balances */
+    .balance {
+      grid-column: 1/-1;
+      background: #fff;
+      padding: 15px 20px;
+      border-radius: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+    .balance div { flex: 1; font-size: 15px; }
+    #eff_balance { color: #e74c3c; font-weight: 600; }
+
+    /* Adjustment Form */
+    form.adjust {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    form.adjust label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+    form.adjust input,
+    form.adjust textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    form.adjust textarea { resize: vertical; min-height: 60px; }
+    form.adjust .full {
+      grid-column: 1/-1;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    th, td {
+      padding: 12px 16px;
+      text-align: center;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 14px;
+    }
+    th {
+      background: #f0f4f8;
+      font-weight: 600;
+    }
+    tr:nth-child(even) { background: #fafbfc; }
+    tr:hover { background: #f1f6fb; }
+
+    /* Total */
+    .total {
+      text-align: right;
+      margin-top: 12px;
+      font-weight: 600;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>⚙️ Manage Student Adjustments</h2>
+
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+      {% for cat,msg in msgs %}
+        <div class="flash {{cat}}">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <!-- Lookup -->
+    <form class="lookup" method="get">
+      <input type="text" name="student_id" placeholder="Enter Student ID"
+             value="{{ student.student_id if student }}" required>
+      <button type="submit" class="submit-btn">Find</button>
+    </form>
+
+    {% if student %}
+      <!-- Student & Balances -->
+      <div class="student-info">
+        <div><strong>Student ID:</strong> {{ student.student_id }}</div>
+        <div><strong>Batch ID:</strong> {{ student.batch_id }}</div>
+        <div><strong>Admission Date:</strong> {{ student.admission_date }}</div>
+        <div class="balance">
+          <div><strong>Real Balance:</strong><br>₹<span id="real_balance">{{ '%.2f'|format(last_balance) }}</span></div>
+          <div><strong>Total Adjusted:</strong><br>₹<span id="tot_adjusted">{{ '%.2f'|format(total_adjusted) }}</span></div>
+          <div><strong>Effective Balance:</strong><br>₹<span id="eff_balance">{{ '%.2f'|format(effective_balance) }}</span></div>
+        </div>
+      </div>
+
+      <!-- Adjustment Form -->
+      <form class="adjust" method="post">
+        <input type="hidden" name="student_id" value="{{ student.student_id }}">
+        <input type="hidden" name="adjust_date"  value="{{ today_str }}">
+
+        <div>
+          <label>Adjust Amount (₹)</label>
+          <input type="number" id="adj_amt" name="adjust_amount" step="0.01"
+                 max="{{ last_balance - total_adjusted }}" required>
+        </div>
+        <div>
+          <label>Reference By</label>
+          <input type="text" name="reference_by">
+        </div>
+        <div>
+          <label>Adjustment For</label>
+          <input type="text" name="adjust_for">
+        </div>
+        <div class="full">
+          <label>Remarks</label>
+          <textarea name="remarks"></textarea>
+        </div>
+        <div class="full">
+          <button type="submit" class="submit-btn">Apply Adjustment</button>
+        </div>
+      </form>
+
+      <!-- Adjustment History -->
+      <h3 style="margin-bottom:10px;">Adjustment History</h3>
+      {% if adjustments %}
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Date</th><th>Amount</th><th>For</th><th>Remarks</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in adjustments %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ a.adjust_date }}</td>
+              <td>₹{{ '%.2f'|format(a.amount) }}</td>
+              <td>{{ a.adjust_for }}</td>
+              <td>{{ a.remarks }}</td>
+              <td>
+                <form method="post"
+                      action="{{ url_for('delete_adjustment', adj_id=a.id) }}"
+                      style="display:inline">
+                  <button type="submit"
+                          style="padding:4px 8px;
+                                 background:#dc3545;
+                                 color:#fff;
+                                 border:none;
+                                 border-radius:4px;
+                                 cursor:pointer;">
+                    Delete
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <div class="total">Total Adjusted: ₹{{ '%.2f'|format(total_adjusted) }}</div>
+      {% else %}
+        <p style="text-align:center; margin-top:20px;">No adjustments recorded yet.</p>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  <script>
+    // Real‐time effective balance update
+    document.addEventListener('DOMContentLoaded', () => {
+      const realBal = parseFloat(document.getElementById('real_balance').textContent);
+      const totAdj  = parseFloat(document.getElementById('tot_adjusted').textContent);
+      const effSpan = document.getElementById('eff_balance');
+      const adjAmt  = document.getElementById('adj_amt');
+
+      adjAmt.addEventListener('input', () => {
+        const val = parseFloat(adjAmt.value) || 0;
+        const newEff = (realBal - totAdj - val).toFixed(2);
+        effSpan.textContent = newEff;
+      });
+    });
+  </script>
+</body>
+</html>

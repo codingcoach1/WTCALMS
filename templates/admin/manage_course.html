@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Manage Course</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #333;
+      font-size: 22px;
+    }
+
+    form {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+
+    input[type="text"] {
+      padding: 8px;
+      width: 65%;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 9px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .module-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .module-item {
+      background: #f8f9fa;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      border-left: 4px solid #007bff;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .module-title {
+      font-weight: 500;
+      color: #333;
+    }
+    .module-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .module-actions a,
+    .module-actions form {
+      display: inline-block;
+      margin: 0;
+    }
+
+    .module-actions button {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      height: 36px;
+      padding: 0 14px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .manage-btn,
+    .delete-btn {
+      padding: 6px 12px;
+      border-radius: 5px;
+      font-size: 13px;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .manage-btn {
+      background-color: #28a745;
+    }
+
+    .manage-btn:hover {
+      background-color: #218838;
+    }
+
+    .delete-btn {
+      background-color: #dc3545;
+    }
+
+    .delete-btn:hover {
+      background-color: #c82333;
+    }
+
+    @media screen and (max-width: 600px) {
+      form {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      input[type="text"] {
+        width: 100%;
+      }
+
+      .module-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .module-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Manage Modules for: {{ course_title }}</h2>
+
+  <form method="POST" action="/add_module/{{ course_id }}">
+    <input type="text" name="module_title" placeholder="Enter module title" required>
+    <button type="submit"><i class="fas fa-plus-circle"></i> Add</button>
+  </form>
+
+  <ul class="module-list">
+    {% for module in modules %}
+      <li class="module-item">
+        <span class="module-title">{{ module.module_title }}</span>
+        <div class="module-actions">
+          <a href="/manage_lessons/{{ module.id }}">
+            <button class="manage-btn"><i class="fas fa-cogs"></i> Lessons</button>
+          </a>
+          <form method="POST" action="/delete_module/{{ module.id }}" onsubmit="return confirm('Delete this module?');">
+            <button class="delete-btn"><i class="fas fa-trash"></i> Delete</button>
+          </form>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+
+</body>
+</html>

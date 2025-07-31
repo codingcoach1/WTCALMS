@@ -1,0 +1,14 @@
+<h2>Lessons - {{ module['title'] }}</h2>
+<div style="display: flex; flex-wrap: wrap; gap: 20px;">
+  {% for lesson in lessons %}
+    <div style="width: 30%; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
+      <h4>{{ lesson['title'] }}</h4>
+      {% if lesson['video_link'] %}
+        <video controls width="100%">
+          <source src="{{ lesson['video_link'] }}">
+          Your browser does not support the video tag.
+        </video>
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>

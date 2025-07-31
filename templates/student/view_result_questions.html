@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Review</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .correct { color: green; font-weight: bold; }
+        .wrong { color: red; font-weight: bold; }
+        .not-answered { color: #888; font-style: italic; }
+        .option-list li {
+            padding: 5px;
+            list-style: none;
+            border-radius: 5px;
+        }
+        .card-body {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <h4 class="mb-4 text-center">🧐 Test Review</h4>
+
+    {% for q in questions %}
+    {% set correct_letter = ['A', 'B', 'C', 'D'][q.correct_option | int - 1] %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <p><strong>Q{{ loop.index }}:</strong> {{ q.question_text }}</p>
+            <ul class="option-list">
+                <li {% if q.selected_option == 'A' %} class="{{ 'correct' if q.is_correct else 'wrong' }}" {% endif %}>
+                    A) {{ q.option_1 }}
+                </li>
+                <li {% if q.selected_option == 'B' %} class="{{ 'correct' if q.is_correct else 'wrong' }}" {% endif %}>
+                    B) {{ q.option_2 }}
+                </li>
+                <li {% if q.selected_option == 'C' %} class="{{ 'correct' if q.is_correct else 'wrong' }}" {% endif %}>
+                    C) {{ q.option_3 }}
+                </li>
+                <li {% if q.selected_option == 'D' %} class="{{ 'correct' if q.is_correct else 'wrong' }}" {% endif %}>
+                    D) {{ q.option_4 }}
+                </li>
+            </ul>
+
+            <p>
+                ✅ <strong>Correct Option:</strong> 
+                <span class="text-success">{{ correct_letter }}</span><br>
+                
+                📝 <strong>Your Answer:</strong> 
+                {% if q.selected_option %}
+                    <span class="{% if q.is_correct %}text-success{% else %}text-danger{% endif %}">
+                        {{ q.selected_option }}
+                    </span>
+                {% else %}
+                    <span class="not-answered">Not Answered</span>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+</body>
+</html>

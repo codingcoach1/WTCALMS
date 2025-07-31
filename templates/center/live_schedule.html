@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Schedule Live Class</title>
+  <style>
+    :root {
+      --primary:       #007bff;
+      --success:       #28a745;
+      --danger:        #dc3545;
+      --bg:            #f8f9fa;
+      --card-bg:       #fff;
+      --text:          #333;
+      --muted:         #666;
+      --border:        #ddd;
+      --radius:        6px;
+      --shadow-color:  rgba(0,0,0,0.1);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 20px;
+    }
+    .container {
+      max-width: 960px;
+      margin: auto;
+    }
+    h1, h2 {
+      text-align: center;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+    .card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 8px var(--shadow-color);
+      margin-bottom: 40px;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .form-grid label {
+      display: flex;
+      flex-direction: column;
+      font-weight: 600;
+    }
+    .form-grid input[type="text"],
+    .form-grid input[type="datetime-local"],
+    .form-grid input[type="file"],
+    .form-grid button {
+      margin-top: 6px;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 14px;
+    }
+    .form-grid .full-width {
+      grid-column: 1 / -1;
+    }
+    .form-grid button {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .form-grid button:hover {
+      background: #0056b3;
+    }
+    .table-responsive {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 40px;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid var(--border);
+      text-align: left;
+      vertical-align: middle;
+    }
+    tbody tr:nth-child(even) {
+      background: var(--bg);
+    }
+    .btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+    .btn-assign {
+      background: var(--success);
+      color: #fff;
+    }
+    .btn-assign:hover {
+      background: #218838;
+    }
+    .btn-delete {
+      background: var(--danger);
+      color: #fff;
+    }
+    .btn-delete:hover {
+      background: #c82333;
+    }
+    select {
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 14px;
+    }
+    img.thumb {
+      width: 80px;
+      border-radius: 4px;
+    }
+    @media (max-width: 600px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📅 Schedule a Live Class</h1>
+    <div class="card">
+      <form method="POST" enctype="multipart/form-data" class="form-grid">
+        <label>
+          Class Name
+          <input type="text" name="title" required>
+        </label>
+        <label>
+          Conducted By
+          <input type="text" name="conducted_by">
+        </label>
+        <label>
+          Start Time
+          <input type="datetime-local" name="start_time" required>
+        </label>
+        <label>
+          End Time (optional)
+          <input type="datetime-local" name="end_time">
+        </label>
+        <label class="full-width">
+          Thumbnail
+          <input type="file" name="thumbnail" accept="image/*">
+        </label>
+        <div class="full-width" style="text-align:right;">
+          <button type="submit">Schedule Class</button>
+        </div>
+      </form>
+    </div>
+
+    <h2>Scheduled Classes</h2>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>When</th>
+            <th>By</th>
+            <th>Thumbnail</th>
+            <th>Assign to Batch</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for cls in classes %}
+          <tr>
+            <td>{{ cls.title }}</td>
+            <td>
+              {{ cls.start_time }}{% if cls.end_time %} → {{ cls.end_time }}{% endif %}
+            </td>
+            <td>{{ cls.conducted_by }}</td>
+            <td>
+              {% if cls.thumbnail %}
+                <img src="{{ url_for('static', filename=cls.thumbnail) }}" alt="{{ cls.title }}" class="thumb">
+              {% endif %}
+            </td>
+            <td>
+              <form method="POST" action="{{ url_for('assign_live', class_id=cls.id) }}" style="display:flex;gap:6px;">
+                <select name="batch_id" required>
+                  <option value="">Select batch</option>
+                  {% for b in batches %}
+                  <option value="{{ b }}">{{ b }}</option>
+                  {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-assign">Assign</button>
+              </form>
+            </td>
+            <td>
+              <form method="POST" action="{{ url_for('delete_live', class_id=cls.id) }}">
+                <button type="submit" class="btn btn-delete" onclick="return confirm('Delete this class?')">
+                  Delete
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

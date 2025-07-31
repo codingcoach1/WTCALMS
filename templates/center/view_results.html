@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>📊 View Results - Center Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #2980b9;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #ecf0f1;
+        }
+        .btn {
+            padding: 6px 14px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .review-btn {
+            background-color: #27ae60;
+            color: white;
+        }
+        .release-btn {
+            background-color: #e67e22;
+            color: white;
+        }
+        .released-label {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>📋 Test Series Results - Center Panel</h2>
+
+    {% if results %}
+    <table>
+        <thead>
+            <tr>
+                <th>Student ID</th>
+                <th>Name</th>
+                <th>Batch ID</th>
+                <th>Test Name</th>
+                <th>Test Type</th>
+                <th>Submitted At</th>
+                <th>Total Questions</th>
+                <th>Correct Answers</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in results %}
+            <tr>
+                <td>{{ row.student_id }}</td>
+                <td>{{ row.student_name }}</td>
+                <td>{{ row.batch_id }}</td>
+                <td>{{ row.test_name }}</td>
+                <td>{{ row.type }}</td>
+                <td>{{ row.submitted_at or 'Not Submitted' }}</td>
+                <td>{{ row.total_questions }}</td>
+                <td>{{ row.correct_answers or 0 }}</td>
+                <td>
+                    <a href="{{ url_for('review_result', student_id=row.student_id, test_series_id=row.test_series_id) }}" class="btn review-btn">Review</a>
+
+                    <form action="{{ url_for('toggle_result', student_id=row.student_id, test_series_id=row.test_series_id) }}" method="POST" style="display:inline;">
+                        {% if row.result_released %}
+                            <button type="submit" class="btn release-btn" style="background-color: #c0392b;">Unrelease</button>
+                        {% else %}
+                            <button type="submit" class="btn release-btn">Release</button>
+                        {% endif %}
+                    </form>
+                </td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p style="text-align:center; font-size: 18px; color: #888;">No test attempts found for this center.</p>
+    {% endif %}
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+<h2>✏️ Update Student Profile</h2>
+<form method="POST" enctype="multipart/form-data" style="max-width: 700px; margin: auto;">
+  <label>Student ID:</label>
+  <input type="text" name="student_id" value="{{ student.student_id }}" readonly>
+
+  <label>Center Code:</label>
+  <input type="text" name="center_code" value="{{ student.center_code }}" readonly>
+
+  <label>Name:</label>
+  <input type="text" name="name" value="{{ student.name }}" required>
+
+  <label>Father's Name:</label>
+  <input type="text" name="father_name" value="{{ student.father_name }}">
+
+  <label>Date of Birth:</label>
+  <input type="date" name="dob" value="{{ student.dob }}">
+
+  <label>Gender:</label>
+  <select name="gender" required>
+    <option value="">--Select--</option>
+    <option value="Male" {% if student.gender == 'Male' %}selected{% endif %}>Male</option>
+    <option value="Female" {% if student.gender == 'Female' %}selected{% endif %}>Female</option>
+    <option value="Other" {% if student.gender == 'Other' %}selected{% endif %}>Other</option>
+  </select>
+
+  <label>Mobile:</label>
+  <input type="text" name="mobile" value="{{ student.mobile }}" required>
+
+  <label>Alternate Mobile:</label>
+  <input type="text" name="alt_mobile" value="{{ student.alt_mobile }}">
+
+  <label>Email:</label>
+  <input type="email" name="email" value="{{ student.email }}">
+
+  <label>Address:</label>
+  <textarea name="address">{{ student.address }}</textarea>
+
+  <label>City:</label>
+  <input type="text" name="city" value="{{ student.city }}">
+
+  <label>Pin Code:</label>
+  <input type="text" name="pin_code" value="{{ student.pin_code }}">
+
+  <label>State:</label>
+  <input type="text" name="state" value="{{ student.state }}">
+
+  <label>Qualification:</label>
+  <input type="text" name="qualification" value="{{ student.qualification }}">
+
+  <label>Passing Year:</label>
+  <input type="text" name="passing_year" value="{{ student.passing_year }}">
+
+  <label>School/College Name:</label>
+  <input type="text" name="school" value="{{ student.school }}">
+
+  <label>Board/University:</label>
+  <input type="text" name="board" value="{{ student.board }}">
+
+  <label>Admission Date:</label>
+  <input type="date" name="admission_date" value="{{ student.admission_date }}">
+
+  <label>Upload New Photo (optional):</label>
+  <input type="file" name="photo">
+
+  <br><br>
+  <button type="submit">✅ Update Profile</button>
+</form>

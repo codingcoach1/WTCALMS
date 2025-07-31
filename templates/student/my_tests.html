@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>📘 My Test Series</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f7f7f7;
+            padding-top: 30px;
+        }
+        .card {
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: scale(1.02);
+        }
+        .start-btn {
+            background-color: #007bff;
+            color: white;
+        }
+        .start-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3 class="mb-4 text-center">📘 My Test Series</h3>
+        {% if tests %}
+            <div class="row">
+                {% for test in tests %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ test.name }}</h5>
+                            <p class="card-text">📝 Questions: {{ test.total_questions }}</p>
+                            <a href="/start_test/{{ test.id }}" class="btn start-btn">Start Test</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-warning text-center">
+                No Test Series Assigned Yet.
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
