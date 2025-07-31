@@ -2,67 +2,352 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Center Login</title>
+  <title>Center Login - Wizard-Tech Computer Academy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/static/images/wizard-tech-favicon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary:#004080;
+      --primary-dark:#003366;
+      --accent:#d3372a;
+      --radius:6px;
+      --shadow:0 12px 30px rgba(0,0,0,0.08);
+      font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+    }
+    *{box-sizing:border-box;}
     body {
-      background: linear-gradient(to right, #667eea, #764ba2);
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-      padding: 0;
+      margin:0;
+      background: #f4f6f9;
+      color:#1f324b;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+
+    /* top strip */
+    .top-bar {
+      background: #0f2366;
+      color: #fff;
+      font-size:13px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:6px 16px;
+      gap:10px;
+    }
+    .top-bar .left, .top-bar .right {
+      display:flex;
+      gap:16px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .top-bar a { color:#fff; text-decoration:none; }
+
+    /* logo + title */
+    .logo-nav {
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      padding:10px 16px;
+      background:#fff;
+      border-bottom:1px solid #e5e8ef;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    .brand {
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .brand img {
+      height:60px;
+      width:auto;
+    }
+    .brand-text {
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .brand-text .title {
+      font-size:22px;
+      font-weight:700;
+      color: var(--accent);
+      letter-spacing:0.5px;
+    }
+    .brand-text .subtitle {
+      font-size:12px;
+      color:#555;
+    }
+
+    .menu-bar {
+      background:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:8px 16px;
+      border-bottom:1px solid #e5e8ef;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    .menu-left, .menu-right {
+      display:flex;
+      align-items:center;
+      gap:16px;
+    }
+    nav a {
+      position: relative;
+      color:#1f324b;
+      text-decoration:none;
+      font-weight:600;
+      padding:8px 10px;
+      border-radius:4px;
+      transition: all .2s;
+      font-size:14px;
+    }
+    nav a.active, nav a:hover {
+      color: var(--primary);
+    }
+    nav a.active::after {
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:0;
+      width:100%;
+      height:3px;
+      background: var(--primary);
+      border-radius:2px;
+    }
+    .btn-login {
+      background: var(--accent);
+      color:#fff;
+      border:none;
+      padding:8px 14px;
+      border-radius:4px;
+      text-decoration:none;
+      font-weight:600;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-size:13px;
+      transition: filter .2s;
+    }
+    .btn-login:hover {
+      filter:brightness(1.05);
+    }
+
+    /* login box */
+    .login-wrapper {
+      flex:1;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:60px 20px;
     }
     .login-container {
-      width: 400px;
-      margin: 80px auto;
+      width: 420px;
       background: #fff;
-      padding: 40px;
+      padding: 35px 30px;
       border-radius: 10px;
-      box-shadow: 0 15px 25px rgba(0,0,0,0.3);
+      box-shadow: var(--shadow);
+      position: relative;
     }
     .login-container h2 {
       text-align: center;
-      margin-bottom: 30px;
-      color: #333;
+      margin-bottom: 18px;
+      color: var(--primary);
+      font-weight:700;
+    }
+    .field {
+      margin-bottom: 16px;
+    }
+    .field label {
+      display:block;
+      font-size:13px;
+      font-weight:600;
+      margin-bottom:6px;
+      color:#444;
     }
     .login-container input {
       width: 100%;
-      padding: 12px;
-      margin: 12px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 16px;
+      padding: 12px 14px;
+      border: 1px solid #cfd9ec;
+      border-radius: 6px;
+      font-size: 15px;
+      outline: none;
+      transition: border .2s, box-shadow .2s;
+    }
+    .login-container input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 8px rgba(0,64,128,0.15);
     }
     .login-container button {
       width: 100%;
       padding: 12px;
-      background: #667eea;
+      background: var(--primary);
       color: #fff;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       font-size: 16px;
       cursor: pointer;
-      margin-top: 20px;
+      font-weight:600;
+      margin-top: 10px;
+      transition: background .2s;
     }
     .login-container button:hover {
-      background: #5a67d8;
+      background: #003366;
     }
     .error {
-      color: red;
-      text-align: center;
+      background: #ffe6e6;
+      color: #b02a2a;
+      padding: 10px 12px;
+      border-radius:6px;
+      font-size:14px;
+      margin-bottom:12px;
+      border:1px solid #f5c2c2;
+    }
+    .note {
+      font-size:12px;
+      margin-top:8px;
+      color:#555;
+    }
+
+    .footer {
+      background: var(--primary-dark);
+      color:#cfd9ec;
+      padding:30px 20px;
+      font-size:13px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:30px;
+      justify-content: space-between;
+      max-width:1160px;
+      margin:0 auto;
+    }
+    .footer .column {
+      flex:1 1 220px;
+      min-width:180px;
+    }
+    .footer h4 {
+      color:#fff;
+      margin-bottom:10px;
+      font-size:16px;
+    }
+    .footer p, .footer li, .footer a {
+      margin:4px 0;
+      color:#cfd9ec;
+      text-decoration:none;
+      line-height:1.4;
+    }
+    .footer ul {
+      list-style:none;
+      padding:0;
+    }
+    .contact-info i {
+      margin-right:8px;
+      color: #00e5ff;
+    }
+    .small {
+      font-size:11px;
+      opacity:.8;
+      margin-top:12px;
+    }
+
+    @media (max-width: 900px) {
+      .logo-nav, .menu-bar { flex-direction: column; align-items:flex-start; }
+      .login-container { width:100%; max-width:480px; }
     }
   </style>
 </head>
 <body>
-  <div class="login-container">
-    <h2>Center Login</h2>
-    {% if error %}
-      <p class="error">{{ error }}</p>
-    {% endif %}
-    <form method="POST">
-      <input type="text" name="center_code" placeholder="Enter Center Code" required>
-      <input type="password" name="password" placeholder="Enter Mobile Number" required>
-      <button type="submit">Login</button>
-    </form>
+
+  <!-- top strip -->
+  <div class="top-bar">
+    <div class="left">
+      <div><i class="fas fa-phone"></i> +91 9386014290</div>
+      <div><i class="fas fa-envelope"></i> info@wtca.edu.in</div>
+    </div>
+    <div class="right">
+      <div>Wizard-Tech Computer Academy Private Limited</div>
+    </div>
   </div>
+
+  <!-- logo -->
+  <div class="logo-nav">
+    <div class="brand">
+      <img src="{{ url_for('static', filename='images/wizard-tech-logo.webp') }}" alt="Logo">
+      <div class="brand-text">
+        <div class="title">Wizard-Tech Computer Academy Pvt. Ltd.</div>
+        <div class="subtitle">ISO 9001:2015 Certified | Reg. U80903DL2007PTC159803</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- navigation / login buttons -->
+  <div class="menu-bar">
+    <div class="menu-left">
+      <nav>
+        <a href="#" class="active"><i class="fas fa-home"></i> Home</a>
+        <a href="#about"><i class="fas fa-info-circle"></i> About</a>
+        <a href="#courses"><i class="fas fa-book"></i> Courses</a>
+        <a href="#student-zone"><i class="fas fa-user-graduate"></i> Student Zone</a>
+      </nav>
+    </div>
+    <div class="menu-right">
+      <a href="/center_login" class="btn-login"><i class="fas fa-user-shield"></i> Center Login</a>
+      <a href="/student_login" class="btn-login"><i class="fas fa-user-graduate"></i> Student Login</a>
+    </div>
+  </div>
+
+  <!-- login area -->
+  <div class="login-wrapper">
+    <div class="login-container">
+      <h2>Center Login</h2>
+      {% if error %}
+        <div class="error">{{ error }}</div>
+      {% endif %}
+      <form method="POST">
+        <div class="field">
+          <label for="center_code">Center Code</label>
+          <input type="text" name="center_code" id="center_code" placeholder="Enter Center Code" required>
+        </div>
+        <div class="field">
+          <label for="password">Mobile Number (Password)</label>
+          <input type="password" name="password" id="password" placeholder="Enter Mobile Number" required>
+        </div>
+        <button type="submit">Login</button>
+        <div class="note">Use your center code and registered mobile number to login.</div>
+      </form>
+    </div>
+  </div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="column">
+      <h4>Office Address</h4>
+      <p><strong>Corporate Office:</strong> Salempur</p>
+      <p><strong>Registered Office:</strong> Chapra, Bihar 841301</p>
+      <p class="small">
+        Wizard-Tech Computer Academy Private Limited is registered under the Companies Act 1956, Ministry of Corporate Affairs, Government of India.
+      </p>
+    </div>
+    <div class="column">
+      <h4>Contact Details</h4>
+      <p class="contact-info"><i class="fas fa-phone"></i> +91 9386014290</p>
+      <p class="contact-info"><i class="fab fa-whatsapp"></i> +91 9386014290</p>
+      <p class="contact-info"><i class="fas fa-envelope"></i> info@wtca.edu.in</p>
+      <p class="small">Support available Monday–Saturday.</p>
+    </div>
+    <div class="column">
+      <h4>About Wizard-Tech</h4>
+      <p>
+        Wizard-Tech Computer Academy Private Limited is an ISO 9001:2015 certified company registered under the Companies Act 1956, Government of India.
+        Started in 2007, we now have over 1000 business partners and have trained approximately two lakh students.
+      </p>
+      <p class="small">&copy; 2025 Wizard-Tech Computer Academy Pvt. Ltd. All rights reserved.</p>
+    </div>
+  </div>
+
 </body>
 </html>

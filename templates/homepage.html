@@ -2,111 +2,342 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Gyandeep Educational Hub</title>
+  <title>Wizard-Tech Computer Academy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/static/images/wizard-tech-favicon.png" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
+    :root {
+      --primary:#004080;
+      --primary-dark:#003366;
+      --accent:#d3372a;
+      --radius:6px;
+      --shadow:0 12px 30px rgba(0,0,0,0.08);
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+    *{box-sizing:border-box;}
     body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f6f9;
+      background:#f4f6f9;
+      color:#1f324b;
+      line-height:1.5;
     }
-
-    header {
-      background-color: #004080;
-      color: white;
-      padding: 20px;
-      text-align: center;
-      font-size: 30px;
-      font-weight: bold;
+    .top-bar {
+      background:#0f2366;
+      color:#fff;
+      font-size:13px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:6px 16px;
+      gap:10px;
     }
-
-    nav {
-      background-color: #003366;
-      display: flex;
+    .top-bar .left, .top-bar .right {
+      display:flex;
+      gap:16px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .top-bar a {
+      color:#fff;
+      text-decoration:none;
+    }
+    .logo-nav {
+      display:flex;
+      align-items:center;
       justify-content: space-between;
-      align-items: center;
-      padding: 10px 30px;
+      padding:10px 16px;
+      background:#fff;
+      border-bottom:1px solid #e5e8ef;
+      flex-wrap:wrap;
+      gap:10px;
     }
-
-    .nav-left, .nav-right {
-      display: flex;
-      gap: 20px;
+    .brand {
+      display:flex;
+      align-items:center;
+      gap:12px;
     }
-
+    .brand img {
+      height:60px;
+      width:auto;
+    }
+    .brand-text {
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .brand-text .title {
+      font-size:22px;
+      font-weight:700;
+      color: var(--accent);
+      letter-spacing:0.5px;
+    }
+    .brand-text .subtitle {
+      font-size:12px;
+      color:#555;
+    }
+    .menu-bar {
+      background:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:8px 16px;
+      border-bottom:1px solid #e5e8ef;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    .menu-left, .menu-right {
+      display:flex;
+      align-items:center;
+      gap:16px;
+    }
     nav a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-      padding: 8px 12px;
-      border-radius: 5px;
-      transition: 0.3s;
+      position: relative;
+      color:#1f324b;
+      text-decoration:none;
+      font-weight:600;
+      padding:8px 10px;
+      border-radius:4px;
+      transition: all .2s;
+      font-size:14px;
+    }
+    nav a.active, nav a:hover {
+      color: var(--primary);
+    }
+    nav a.active::after {
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:0;
+      width:100%;
+      height:3px;
+      background: var(--primary);
+      border-radius:2px;
+    }
+    .btn-login {
+      background: var(--accent);
+      color:#fff;
+      border:none;
+      padding:8px 14px;
+      border-radius:4px;
+      text-decoration:none;
+      font-weight:600;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-size:13px;
+      transition: filter .2s;
+    }
+    .btn-login:hover {
+      filter:brightness(1.05);
     }
 
-    nav a:hover {
-      background-color: #0059b3;
+    .hero {
+      padding:40px 20px;
+      max-width:1160px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:40px;
+      align-items:start;
     }
-
-    .content {
-      padding: 40px;
-      text-align: center;
+    .hero-content {
+      padding-top:10px;
+    }
+    .hero-content h2 {
+      font-size:32px;
+      margin-bottom:12px;
+      color:#0f2366;
+    }
+    .hero-content p {
+      font-size:15px;
+      margin-bottom:16px;
+    }
+    .cards {
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      margin-top:10px;
+    }
+    .card {
+      background:#fff;
+      border-radius:8px;
+      padding:20px 22px;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+    .card h3 {
+      margin-top:0;
+      font-size:18px;
+      color:#004080;
+    }
+    .badge {
+      display:inline-block;
+      background:#004080;
+      color:#fff;
+      padding:4px 12px;
+      border-radius:20px;
+      font-size:12px;
+      margin-bottom:6px;
+    }
+    .about {
+      margin-top:10px;
+      font-size:14px;
+      color:#2c3e50;
+    }
+    .highlight {
+      background: rgba(0,64,128,0.05);
+      padding:12px;
+      border-left:4px solid var(--primary);
+      margin:16px 0;
+      border-radius:4px;
     }
 
     .footer {
-      background-color: #00264d;
-      color: white;
-      padding: 20px;
-      text-align: center;
+      background: var(--primary-dark);
+      color:#cfd9ec;
+      padding:30px 20px;
+      font-size:13px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:30px;
+      justify-content: space-between;
+      max-width:1160px;
+      margin:0 auto;
+    }
+    .footer .column {
+      flex:1 1 220px;
+      min-width:180px;
+    }
+    .footer h4 {
+      color:#fff;
+      margin-bottom:10px;
+      font-size:16px;
+    }
+    .footer p, .footer li, .footer a {
+      margin:4px 0;
+      color:#cfd9ec;
+      text-decoration:none;
+      line-height:1.4;
+    }
+    .footer ul {
+      list-style:none;
+      padding:0;
+    }
+    .contact-info i {
+      margin-right:8px;
+      color: #00e5ff;
+    }
+    .small {
+      font-size:11px;
+      opacity:.8;
+      margin-top:12px;
     }
 
-    .btn-login {
-      background-color: #ff9933;
-      color: white;
-      padding: 6px 12px;
-      border: none;
-      border-radius: 4px;
-      font-weight: bold;
-      text-decoration: none;
-    }
-
-    .btn-login i {
-      margin-right: 6px;
-    }
-
-    .btn-login:hover {
-      background-color: #e68a00;
+    @media (max-width: 1080px){
+      .hero { grid-template-columns:1fr; }
+      .menu-bar { flex-direction:column; align-items:flex-start; }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    Gyandeep Educational Hub
-  </header>
-
-  <nav>
-    <div class="nav-left">
-      <a href="#"><i class="fas fa-home"></i> Home</a>
-      <a href="#"><i class="fas fa-info-circle"></i> About Us</a>
-      <a href="#"><i class="fas fa-envelope"></i> Contact Us</a>
-      <a href="#"><i class="fas fa-tags"></i> Pricing</a>
-      <a href="#"><i class="fas fa-book"></i> Free Notes</a>
+  <!-- top strip with contact -->
+  <div class="top-bar">
+    <div class="left">
+      <div><i class="fas fa-phone"></i> +91 9386014290</div>
+      <div><i class="fas fa-envelope"></i> info@wtca.edu.in</div>
     </div>
-    <div class="nav-right">
+    <div class="right">
+      <div>Wizard-Tech Computer Academy Private Limited</div>
+    </div>
+  </div>
+
+  <!-- logo -->
+  <div class="logo-nav">
+    <div class="brand">
+      <img src="{{ url_for('static', filename='images/wizard-tech-logo.webp') }}" alt="Wizard-Tech Logo">
+      <div class="brand-text">
+        <div class="title">Wizard-Tech Computer Academy Pvt. Ltd.</div>
+        <div class="subtitle">ISO 9001:2015 Certified | Reg. U80903DL2007PTC159803</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- menu bar with navigation and login -->
+  <div class="menu-bar">
+    <div class="menu-left">
+      <nav>
+        <a href="#" class="active"><i class="fas fa-home"></i> Home</a>
+        <a href="#about"><i class="fas fa-info-circle"></i> About</a>
+        <a href="#courses"><i class="fas fa-book"></i> Courses</a>
+        <a href="#student-zone"><i class="fas fa-user-graduate"></i> Student Zone</a>
+      </nav>
+    </div>
+    <div class="menu-right">
       <a href="/center_login" class="btn-login"><i class="fas fa-user-shield"></i> Center Login</a>
       <a href="/student_login" class="btn-login"><i class="fas fa-user-graduate"></i> Student Login</a>
     </div>
-  </nav>
-
-  <div class="content">
-    <h2>Welcome to Gyandeep Educational Hub</h2>
-    <p>We provide affordable, digital learning & management solutions to education centers and students.</p>
-    <img src="{{ url_for('static', filename='images/hero.png') }}" alt="Banner" style="max-width: 100%; margin-top: 20px;">
   </div>
 
+  <!-- hero / about summary -->
+  <div class="hero">
+    <div class="hero-content">
+      <div class="badge">Since 27th February 2007</div>
+      <h2>Empowering Education Through Technology</h2>
+      <p>
+        Wizard-Tech Computer Academy Private Limited is an ISO 9001:2015 certified company, registered under the Companies Act 1956,
+        Ministry of Corporate Affairs, Government of India with identity number <strong>U80903DL2007PTC159803</strong>. Started with one franchisee,
+        today we have over <strong>1000 Business Partners</strong> and have trained approximately <strong>two lakh students</strong>.
+      </p>
+      <div class="highlight">
+        <p>
+          Wizard-Tech Computer Academy is a complete training institute for Information Technology offering a wide range of job-oriented courses.
+          Our aim is to provide quality and eminent education that enables students to take on tomorrow’s challenges. We uphold technical education standards
+          and offer placement assistance to help students transition into careers.
+        </p>
+      </div>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <h3>Our Journey</h3>
+        <p class="about">
+          The company began its journey in 2007 and has grown via an expanding network of trusted partners. We focus on scalable learning and measurable outcomes.
+        </p>
+      </div>
+      <div class="card">
+        <h3>Why Choose Us</h3>
+        <p class="about">
+          Quality training, placement support, industry-aligned curriculum, and a vast partner ecosystem. We strive to ensure each student is job-ready.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
   <div class="footer">
-    <p>📍 Address: Gyandeep Institute, XYZ Road, Your City, India</p>
-    <p>📞 Phone: +91-9876543210 | ✉️ Email: gyandeepedu@gmail.com</p>
-    <p>&copy; 2025 Gyandeep Educational Hub. All rights reserved.</p>
+    <div class="column">
+      <h4>Office Address</h4>
+      <p><strong>Corporate Office:</strong> Salempur</p>
+      <p><strong>Registered Office:</strong> Chapra, Bihar 841301</p>
+      <p class="small">
+        Wizard-Tech Computer Academy Private Limited is registered under the Companies Act 1956, Ministry of Corporate Affairs, Government of India.
+      </p>
+    </div>
+    <div class="column">
+      <h4>Contact Details</h4>
+      <p class="contact-info"><i class="fas fa-phone"></i> +91 9386014290</p>
+      <p class="contact-info"><i class="fab fa-whatsapp"></i> +91 9386014290</p>
+      <p class="contact-info"><i class="fas fa-envelope"></i> info@wtca.edu.in</p>
+      <p class="small">Support available Monday–Saturday.</p>
+    </div>
+    <div class="column">
+      <h4>About Wizard-Tech</h4>
+      <p>
+        Over 1000 business partners and two lakh trained students. We deliver job-oriented IT education with ongoing placement assistance.
+      </p>
+      <p class="small">&copy; 2025 Wizard-Tech Computer Academy Pvt. Ltd. All rights reserved.</p>
+    </div>
   </div>
 
 </body>
