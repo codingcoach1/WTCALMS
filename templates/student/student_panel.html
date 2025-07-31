@@ -9,6 +9,8 @@
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #f0f2f5;
+      height: 100vh;
+      overflow: hidden;
     }
 
     header {
@@ -18,6 +20,8 @@
       align-items: center;
       padding: 15px 25px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      gap: 20px;
+      flex-shrink: 0;
     }
 
     header img {
@@ -25,90 +29,131 @@
       width: 60px;
       border-radius: 50%;
       object-fit: cover;
-      margin-right: 20px;
       border: 2px solid #fff;
+    }
+
+    header .info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
     header .info strong {
       font-size: 18px;
+      display: block;
+    }
+    header .info small {
+      font-size: 13px;
+      opacity: 0.9;
     }
 
     .container {
       display: flex;
       height: calc(100vh - 90px);
+      overflow: hidden;
     }
 
     .sidebar {
       background: #2c3e50;
       color: white;
-      width: 220px;
-      transition: width 0.3s;
+      width: 240px;
+      transition: width 0.25s ease;
       position: relative;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
     }
 
     .sidebar.minimized {
-      width: 60px;
+      width: 70px;
     }
 
     .sidebar ul {
       list-style: none;
-      padding: 0;
+      padding: 10px 0;
+      margin: 0;
+      flex: 1;
+      overflow-y: auto;
     }
 
     .sidebar ul li {
-      padding: 14px 20px;
+      padding: 14px 22px;
       display: flex;
       align-items: center;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: background 0.25s, color 0.25s;
+      gap: 12px;
+      position: relative;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .sidebar ul li i {
+      width: 24px;
+      text-align: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .sidebar ul li span {
+      flex: 1;
+      overflow: hidden;
     }
 
     .sidebar ul li:hover {
       background: #34495e;
     }
 
-    .sidebar ul li i {
-      width: 24px;
-      text-align: center;
+    .sidebar ul li.active {
+      background: #1abc9c;
+      color: #fff;
     }
 
-    .sidebar ul li span {
-      margin-left: 12px;
-      white-space: nowrap;
+    .sidebar ul li.active i {
+      color: #fff;
     }
 
+    .sidebar.minimized ul li {
+      justify-content: center;
+    }
     .sidebar.minimized ul li span {
       display: none;
     }
 
     .toggle-btn {
       position: absolute;
-      top: 20px;
-      right: -15px;
-      background: #1e90ff;
+      top: 2px;
+      right: -10px;
+      background: red;
       color: white;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
+      border-radius: 20%;
+      width: 34px;
+      height: 34px;
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      font-size: 18px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+      font-size: 16px;
+      transition: transform 0.2s ease;
+      z-index: 10;
     }
 
     .content {
       flex: 1;
       padding: 0;
-      overflow-y: auto;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
     }
 
     iframe {
       width: 100%;
       height: 100%;
       border: none;
+      flex:1;
     }
 
     footer {
@@ -116,9 +161,12 @@
       color: white;
       padding: 10px 20px;
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
       font-size: 14px;
+      gap: 10px;
+      flex-shrink: 0;
     }
 
     .logout {
@@ -126,18 +174,40 @@
       text-decoration: none;
       display: flex;
       align-items: center;
+      font-weight: 600;
+      gap: 6px;
     }
 
-    .logout i {
-      margin-right: 6px;
+    .footer-info {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
     }
 
-    @media screen and (max-width: 768px) {
+    #clock {
+      font-weight: 600;
+    }
+
+    /* Scrollbar styling */
+    .sidebar ul::-webkit-scrollbar {
+      width: 8px;
+    }
+    .sidebar ul::-webkit-scrollbar-track {
+      background: #23344a;
+    }
+    .sidebar ul::-webkit-scrollbar-thumb {
+      background: #1abc9c;
+      border-radius: 4px;
+    }
+
+    @media screen and (max-width: 900px) {
       .sidebar {
         position: absolute;
-        z-index: 10;
+        z-index: 50;
         height: 100%;
       }
+      .container { flex-direction: column; }
+      .content { height: 60vh; }
     }
   </style>
 </head>
@@ -156,47 +226,108 @@
   <div class="container">
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-      <div class="toggle-btn" onclick="toggleSidebar()">&#x3E;</div>
+      <div class="toggle-btn" id="toggleBtn" aria-label="Toggle sidebar">&#x3C;</div>
       <ul>
-        <li onclick="loadIframe('/student/profile')"><i class="fas fa-user"></i> <span>Profile</span></li>
-        <li onclick="loadIframe('/student/my_courses')"><i class="fas fa-book-open"></i> <span>My Courses</span></li>
-        <li onclick="loadIframe('/student_payment_history/{{ student.student_id }}')"><i class="fas fa-wallet"></i> <span>My Payments</span></li>
-        <li onclick="loadIframe('/student/my_tests')"><i class="fas fa-file-alt"></i> <span>My Tests</span></li>
-        <li onclick="loadIframe('/student/my_results')"><i class="fas fa-chart-line"></i> <span>My Results</span></li>
-        <li onclick="loadIframe('/student/live_classes')"><i class="fas fa-chart-line"></i> <span>Live Classes</span></li>
-        <li onclick="alert('Certificate section coming soon!')"><i class="fas fa-certificate"></i> <span>Certificate</span></li>
-        <li><a href="/student_logout" class="logout"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+        <li data-path="/student/profile" onclick="navigate(this,'/student/profile')">
+          <i class="fas fa-user"></i> <span>Profile</span>
+        </li>
+        <li data-path="/student/my_courses" onclick="navigate(this,'/student/my_courses')">
+          <i class="fas fa-book-open"></i> <span>My Courses</span>
+        </li>
+        <li data-path="/student_payment_history/{{ student.student_id }}" onclick="navigate(this,'/student_payment_history/{{ student.student_id }}')">
+          <i class="fas fa-wallet"></i> <span>My Payments</span>
+        </li>
+        <li data-path="/student/my_tests" onclick="navigate(this,'/student/my_tests')">
+          <i class="fas fa-file-alt"></i> <span>My Tests</span>
+        </li>
+        <li data-path="/student/my_results" onclick="navigate(this,'/student/my_results')">
+          <i class="fas fa-chart-line"></i> <span>My Results</span>
+        </li>
+        <li data-path="/student/live_classes" onclick="navigate(this,'/student/live_classes')">
+          <i class="fas fa-video"></i> <span>Live Classes</span>
+        </li>
+        <li onclick="alert('Certificate section coming soon!')">
+          <i class="fas fa-certificate"></i> <span>Certificate</span>
+        </li>
+        <li style="margin-top:auto;">
+          <a href="/student_logout" class="logout"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+        </li>
       </ul>
     </div>
 
     <!-- Iframe -->
     <div class="content">
       <iframe id="main-iframe" src="/student/profile"></iframe>
+      <footer>
+        <div class="footer-info">
+          <div>Center: {{ center['name'] }}</div>
+          <div>Mobile: {{ center['mobile'] }}</div>
+          <div>Email: {{ center['email'] }}</div>
+        </div>
+        <div id="clock"></div>
+      </footer>
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer>
-    <div>Center: {{ center['name'] }} | Mobile: {{ center['mobile'] }} | Email: {{ center['email'] }}</div>
-    <div id="clock"></div>
-  </footer>
-
   <!-- Scripts -->
   <script>
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleBtn');
+    const iframe = document.getElementById('main-iframe');
+
+    // Initialize from storage
+    const storedPath = localStorage.getItem('student_active_path');
+    if (storedPath) {
+      setActiveByPath(storedPath);
+      iframe.src = storedPath;
+    }
+
+    function navigate(el, path) {
+      setActive(el);
+      iframe.src = path;
+      localStorage.setItem('student_active_path', path);
+    }
+
+    function setActive(el) {
+      document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function setActiveByPath(path) {
+      const lis = document.querySelectorAll('.sidebar ul li[data-path]');
+      lis.forEach(li => {
+        if (li.dataset.path === path || path.startsWith(li.dataset.path)) {
+          li.classList.add('active');
+        } else {
+          li.classList.remove('active');
+        }
+      });
+    }
+
+    iframe.addEventListener('load', () => {
+      let current = iframe.src;
+      try {
+        const url = new URL(current);
+        current = url.pathname + url.search;
+      } catch {}
+      setActiveByPath(current);
+      localStorage.setItem('student_active_path', current);
+    });
+
+    toggleBtn.addEventListener('click', () => {
       sidebar.classList.toggle('minimized');
-    }
+      if (sidebar.classList.contains('minimized')) {
+        toggleBtn.innerHTML = '&#x3E;'; // expand
+      } else {
+        toggleBtn.innerHTML = '&#x3C;'; // collapse
+      }
+    });
 
-    function loadIframe(path) {
-      document.getElementById("main-iframe").src = path;
-    }
-
+    // Clock
     function updateClock() {
       const now = new Date();
       document.getElementById('clock').textContent = now.toLocaleString();
     }
-
     setInterval(updateClock, 1000);
     updateClock();
   </script>
